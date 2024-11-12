@@ -6,71 +6,147 @@
 	xmlns:core="sap.ui.core"
 	xmlns:u="sap.ui.unified"
 	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:l="sap.ui.layout"
 	xmlns="sap.m">
 	<Wizard
-		id="CreateProductWizard"
+		id="FornGfexWizard"
 		finishButtonText="Finish"
-		currentStep="PricingStep"
+		currentStep="BasicDataStep"
 		class="sapUiResponsivePadding--header sapUiResponsivePadding--content">
-		<WizardStep id="ProductTypeStep"
-					title="Product Type"
+		<WizardStep id="BasicDataStep"
+					title="{i18n>basicDataStep}"
 					activate="onActivate">
-			<MessageStrip class="sapUiSmallMarginBottom"
-					text="The Wizard control is supposed to break down large tasks, into smaller steps, easier for the user to work with."
-					showIcon="true"/>
-			<Text class="sapUiSmallMarginBottom"
-					text="Sed fermentum, mi et tristique ullamcorper, sapien sapien faucibus sem, quis pretium nibh lorem malesuada diam. Nulla quis arcu aliquet, feugiat massa semper, volutpat diam. Nam vitae ante posuere, molestie neque sit amet, dapibus velit. Maecenas eleifend tempor lorem. Mauris vitae elementum mi, sed eleifend ligula. Nulla tempor vulputate dolor, nec dignissim quam convallis ut. Praesent vitae commodo felis, ut iaculis felis. Fusce quis eleifend sapien, eget facilisis nibh. Suspendisse est velit, scelerisque ut commodo eget, dignissim quis metus. Cras faucibus consequat gravida. Curabitur vitae quam felis. Phasellus ac leo eleifend, commodo tortor et, varius quam. Aliquam erat volutpat"/>
-			<HBox
-					alignItems="Center"
-					justifyContent="Center"
-					width="100%">
-				<SegmentedButton
-						width="320px">
-					<items>
-						<SegmentedButtonItem icon="sap-icon://iphone" text="Mobile"/>
-						<SegmentedButtonItem icon="sap-icon://sys-monitor" text="Desktop"/>
-						<SegmentedButtonItem icon="sap-icon://database" text="Other"/>
-					</items>
-				</SegmentedButton>
-			</HBox>
+			<VBox class="sapUiSmallMargin">
+				<f:Form id="FormChangeColumn_twoGroups234" editable="true">
+					<f:layout>
+						<f:ColumnLayout
+							columnsM="2"
+							columnsL="3"
+							columnsXL="4"/>
+					</f:layout>
+					<f:formContainers>
+						<f:FormContainer title="Address">
+							<f:formElements>
+								<f:FormElement label="Name">
+									<f:fields blocked="true">
+										<Text text="teste" id="name"/>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Street">
+									<f:fields>
+										<Input value="{Street}" />
+										<Input value="{HouseNumber}">
+											<layoutData>
+												<f:ColumnElementData cellsSmall="2" cellsLarge="1" />
+											</layoutData>
+										</Input>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="ZIP Code/City">
+									<f:fields>
+										<Input value="{ZIPCode}">
+											<layoutData>
+												<f:ColumnElementData cellsSmall="3" cellsLarge="2" />
+											</layoutData>
+										</Input>
+										<Input value="{City}" />
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Country">
+									<f:fields>
+										<Select id="country" selectedKey="{Country}">
+											<items>
+												<core:Item text="England" key="England"/>
+												<core:Item text="Germany" key="Germany"/>
+												<core:Item text="USA" key="USA"/>
+											</items>
+										</Select>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Web">
+									<f:fields>
+										<Input value="{Url}" type="Url"/>
+									</f:fields>
+								</f:FormElement>
+							</f:formElements>
+						</f:FormContainer>
+						<f:FormContainer title="Contact">
+							<f:formElements>
+								<f:FormElement label="Twitter">
+									<f:fields>
+										<Input value="{Twitter}" />
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Email">
+									<f:fields>
+										<Input value="{Email}" type="Email"/>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Tel.">
+									<f:fields>
+										<Input value="{Tel}" type="Tel"/>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="SMS">
+									<f:fields>
+										<Input value="{Sms}" type="Tel"/>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Mobile">
+									<f:fields>
+										<Input value="{Mobile}" type="Tel"/>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Pager">
+									<f:fields>
+										<Input value="{Pager}" type="Tel"/>
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="Fax">
+									<f:fields>
+										<Input value="{Fax}" type="Tel"/>
+									</f:fields>
+								</f:FormElement>
+							</f:formElements>
+						</f:FormContainer>
+					</f:formContainers>
+				</f:Form>
+			</VBox>
 		</WizardStep>
-		<WizardStep id="ProductInfoStep"
-					title="Product Information"
+		<WizardStep id="CnpjStep"
+					title="{i18n>cnpjStep}"
 					activate="onActivate">
 			<MessageStrip class="sapUiSmallMarginBottom"
-					text="Validation in the wizard is controlled by calling the validateStep(Step) and invalidateStep(Step) methods "
+					text="{i18n>descCnpjStep}"
 					showIcon="true"/>
-			<Text text="Cras tellus leo, volutpat vitae ullamcorper eu, posuere malesuada nisl. Integer pellentesque leo sit amet dui vehicula, quis ullamcorper est pulvinar. Nam in libero sem. Suspendisse arcu metus, molestie a turpis a, molestie aliquet dui. Donec pulvinar, sapien et viverra imperdiet, orci erat porttitor nulla, eget commodo metus nibh nec ipsum. Aliquam lacinia euismod metus, sollicitudin pellentesque purus volutpat eget. Pellentesque egestas erat quis eros convallis mattis. Mauris hendrerit sapien a malesu corper eu, posuere malesuada nisl. Integer pellentesque leo sit amet dui vehicula, quis ullamcorper est pulvinar. Nam in libero sem. Suspendisse arcu metus, molestie a turpis a, molestie aliquet dui. Donec pulvinar, sapien	corper eu, posuere malesuada nisl. Integer pellentesque leo sit amet dui vehicula, quis ullamcorper est pulvinar. Nam in libero sem. Suspendisse arcu metus, molestie a turpis a, molestie aliquet dui. Donec pulvinar, sapien	"/>
+						
+					
 			<form:SimpleForm
 					editable="true"
 					layout="ResponsiveGridLayout">
-				<Label text="Name" required="true"/>
-				<Input valueStateText="Enter 6 symbols or more"
-						valueState="{/productNameState}" id="ProductName"
+				<Label text="{i18n>cnpj}" required="true"/>
+				<Input valueStateText="00.000.000/0001-00"
+						 id="cnpj"
 						change="validateProdInfoStep"
-						placeholder="Enter name with length greater than 6" value="{/productName}"/>
-				<Label text="Weight" required="true"/>
-				<Input valueStateText="Enter digits"
-						valueState="{/productWeightState}" id="ProductWeight"
-						change="validateProdInfoStep"
-						type="Number" placeholder="Enter digits"
-						value="{/productWeight}"/>
-				<Label text="Manufacturer"/>
-				<Select selectedKey="{/productManufacturer}">
-					<core:Item key="Apple" text="Apple"/>
-					<core:Item key="Microsoft" text="Microsoft"/>
-					<core:Item key="Google" text="Google"/>
-					<core:Item key="Sony" text="Sony"/>
-					<core:Item key="Samsung" text="Samsung"/>
-					<core:Item key="Logitech" text="Logitech"/>
-				</Select>
-				<Label text="Description"/>
-				<TextArea value="{/productDescription}" rows="8"/>
+						placeholder="00.000.000/0001-00" value="{/cnpj}">
+						<layoutData>
+						<l:GridData span="XL2 L3 M3 S4" />
+					</layoutData></Input>
+							<Button icon="sap-icon://add" type="Transparent" press="onPress" ariaLabelledBy="editButtonLabel">
+								<layoutData>
+						<l:GridData span="XL1 L1 M1 S1" />
+					</layoutData>
+
+					</Button>
+							
+					
+				
 			</form:SimpleForm>
 		</WizardStep>
 		<WizardStep id="OptionalInfoStep"
 					optional="true"
-					title="Additional Information"
+					title="{i18n>manufacturerStep}"
 					activate="onActivate">
 			<MessageStrip class="sapUiSmallMarginBottom"
 					text="You can validate steps by default with the validated='true' property of the step. The next button is always enabled."
@@ -108,7 +184,29 @@
 			</form:SimpleForm>
 		</WizardStep>
 		<WizardStep id="PricingStep"
-					title="Pricing"
+					title="{i18n>classStep}"
+					activate="onActivate">
+			<MessageStrip class="sapUiSmallMarginBottom"
+					text="You can use the wizard previousStep() and nextStep() methods to navigate from step to step without validation. Also you can use the GoToStep(step) method to scroll programmatically to previously visited steps."
+					showIcon="true"/>
+			<form:SimpleForm
+					editable="true"
+					layout="ResponsiveGridLayout">
+				<Label text="Price"/>
+				<Input value="{/productPrice}"/>
+				<Label text="Discount group"/>
+				<MultiComboBox>
+					<core:Item key="Kids" text="Kids"/>
+					<core:Item key="Teens" text="Teens"/>
+					<core:Item key="Adults" text="Adults"/>
+					<core:Item key="Elderly" text="Elderly"/>
+				</MultiComboBox>
+				<Label text=" VAT is included"/>
+				<CheckBox selected="{/productVAT}"/>
+			</form:SimpleForm>
+		</WizardStep>
+		<WizardStep id="exclusivityLetterStep"
+					title="{i18n>exclusivityLetterStep}"
 					activate="onActivate">
 			<MessageStrip class="sapUiSmallMarginBottom"
 					text="You can use the wizard previousStep() and nextStep() methods to navigate from step to step without validation. Also you can use the GoToStep(step) method to scroll programmatically to previously visited steps."

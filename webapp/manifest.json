@@ -100,6 +100,20 @@
       "type": "XML",
       "async": true,
       "id": "App"
-    }
+    },
+    "config": {
+			"fornmanager": {
+				"stretch": true,
+				"files": [
+					"view/App.view.xml",
+					"view/main.view.xml",
+					"view/Linear.view.xml",
+					"controller/App.controller.js",
+					"controller/main.controller.js",
+					"controller/Linear.controller.js",
+					"manifest.json"
+				]
+			}
+		}
   }
 }

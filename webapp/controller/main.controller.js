@@ -1,4 +1,5 @@
 sap.ui.define([
+    'sap/ui/core/mvc/Controller',
     'sap/ui/model/json/JSONModel',
 	"sap/m/MessageToast",
 	"sap/base/Log",
@@ -13,18 +14,18 @@ sap.ui.define([
                 this.model = new JSONModel({
                     selectedBackgroundDesign: "Standard",
                     selectedShowCase: "linear",
-                    linearWizardSelectedStep: "PricingStep"
+                    linearWizardSelectedStep: "BasicDataStep"
                 });
                 this.getView().setModel(this.model);
             },
             onCurrentStepChangeLinear: function (event) {
-                var oProductWizard = this.linearWizard.byId("CreateProductWizard");
+                var oProductWizard = this.linearWizard.byId("FornGfexWizard");
     
                 oProductWizard.setCurrentStep(this.byId("wizardViewLinear").byId(event.getParameter("selectedItem").getKey()));
             },
     
             onBackgroundDesignChange: function (event) {
-                var oProductWizard = this.linearWizard.byId("CreateProductWizard"),
+                var oProductWizard = this.linearWizard.byId("FornGfexWizard"),
                     oBranchingWizard = this.branchingWizard.byId("BranchingWizard");
     
                 oProductWizard.setBackgroundDesign(event.getParameter("selectedItem").getKey());

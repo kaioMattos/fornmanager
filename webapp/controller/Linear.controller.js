@@ -15,7 +15,7 @@ sap.ui.define([
 
 		validateProdInfoStep: function () {
 			var oModel = this.getView().getModel(),
-				oProdInfoStep = this.getView().byId("ProductInfoStep"),
+				oProdInfoStep = this.getView().byId("CnpjStep"),
 				oData = oModel.getData(),
 				bIsValidProdName = !!(oData['productName'] && oData['productName'].length >= 6),
 				bIsValidProductWeight = !isNaN(oData['productWeight']);
@@ -32,7 +32,7 @@ sap.ui.define([
 
 			this._syncSelect(sCurrentStepId);
 
-			if (sCurrentStepId === 'ProductInfoStep') {
+			if (sCurrentStepId === 'CnpjStep') {
 				this.validateProdInfoStep();
 			}
 		}
