@@ -12,6 +12,11 @@ sap.ui.define([
                 this.linearWizard = this.byId("wizardViewLinear");
                 this.branchingWizard = this.byId("wizardViewBranching");
                 this.model = new JSONModel({
+                    cnpjCollection:[{
+                        cnpj:"11.111.111/1111-11",status:true
+                    },{
+                        cnpj:"11.111.111/1111-11",status:false
+                    }],
                     selectedBackgroundDesign: "Standard",
                     selectedShowCase: "linear",
                     linearWizardSelectedStep: "BasicDataStep"

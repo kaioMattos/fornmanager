@@ -8,6 +8,7 @@
 	xmlns:mvc="sap.ui.core.mvc"
 	xmlns:f="sap.ui.layout.form"
 	xmlns:l="sap.ui.layout"
+	xmlns:t="sap.ui.table"
 	xmlns="sap.m">
 	<Wizard
 		id="FornGfexWizard"
@@ -26,122 +27,67 @@
 							columnsXL="4"/>
 					</f:layout>
 					<f:formContainers>
-						<f:FormContainer title="Address">
-							<f:formElements>
-								<f:FormElement label="Name">
-									<f:fields blocked="true">
-										<Text text="teste" id="name"/>
-									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="Street">
-									<f:fields>
-										<Input value="{Street}" />
-										<Input value="{HouseNumber}">
-											<layoutData>
-												<f:ColumnElementData cellsSmall="2" cellsLarge="1" />
-											</layoutData>
-										</Input>
-									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="ZIP Code/City">
-									<f:fields>
-										<Input value="{ZIPCode}">
-											<layoutData>
-												<f:ColumnElementData cellsSmall="3" cellsLarge="2" />
-											</layoutData>
-										</Input>
-										<Input value="{City}" />
-									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="Country">
-									<f:fields>
-										<Select id="country" selectedKey="{Country}">
-											<items>
-												<core:Item text="England" key="England"/>
-												<core:Item text="Germany" key="Germany"/>
-												<core:Item text="USA" key="USA"/>
-											</items>
-										</Select>
-									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="Web">
-									<f:fields>
-										<Input value="{Url}" type="Url"/>
-									</f:fields>
-								</f:FormElement>
-							</f:formElements>
-						</f:FormContainer>
-						<f:FormContainer title="Contact">
-							<f:formElements>
-								<f:FormElement label="Twitter">
-									<f:fields>
-										<Input value="{Twitter}" />
-									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="Email">
-									<f:fields>
-										<Input value="{Email}" type="Email"/>
-									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="Tel.">
-									<f:fields>
-										<Input value="{Tel}" type="Tel"/>
-									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="SMS">
-									<f:fields>
-										<Input value="{Sms}" type="Tel"/>
-									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="Mobile">
-									<f:fields>
-										<Input value="{Mobile}" type="Tel"/>
-									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="Pager">
-									<f:fields>
-										<Input value="{Pager}" type="Tel"/>
-									</f:fields>
-								</f:FormElement>
-								<f:FormElement label="Fax">
-									<f:fields>
-										<Input value="{Fax}" type="Tel"/>
-									</f:fields>
-								</f:FormElement>
-							</f:formElements>
-						</f:FormContainer>
+						
+						
 					</f:formContainers>
 				</f:Form>
 			</VBox>
 		</WizardStep>
-		<WizardStep id="CnpjStep"
-					title="{i18n>cnpjStep}"
-					activate="onActivate">
-			<MessageStrip class="sapUiSmallMarginBottom"
-					text="{i18n>descCnpjStep}"
-					showIcon="true"/>
-						
-					
-			<form:SimpleForm
-					editable="true"
-					layout="ResponsiveGridLayout">
-				<Label text="{i18n>cnpj}" required="true"/>
-				<Input valueStateText="00.000.000/0001-00"
-						 id="cnpj"
-						change="validateProdInfoStep"
-						placeholder="00.000.000/0001-00" value="{/cnpj}">
-						<layoutData>
-						<l:GridData span="XL2 L3 M3 S4" />
-					</layoutData></Input>
-							<Button icon="sap-icon://add" type="Transparent" press="onPress" ariaLabelledBy="editButtonLabel">
-								<layoutData>
-						<l:GridData span="XL1 L1 M1 S1" />
-					</layoutData>
+		<WizardStep id="CnpjStep" title="{i18n>cnpjStep}" activate="onActivate">
+			<Text text="{i18n>descCnpjStep}"/>	
+			<form:SimpleForm labelSpanL="1"  labelSpanM="1" labelSpanS="6" class="sapUiLargeMarginTop"
+				editable="true" layout="ResponsiveGridLayout">
+				<form:content class="sapUiForm">
+					<!-- <Label text="{i18n>cnpj}" required="true"/> -->
 
+					<Input valueStateText="00.000.000/0001-00" id="cnpj" submit="includeCnpj"
+						placeholder="00.000.000/0001-00" value="{/cnpj}" liveChange="validCnpj"/> 
+					<Button text="Adicionar" type="Transparent" press="onPress" ariaLabelledBy="editButtonLabel">
+						<layoutData>
+							<l:GridData span="XL1 L1 M1 S1" />
+						</layoutData>
 					</Button>
-							
-					
-				
+				</form:content>
+			</form:SimpleForm>
+			<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
+				<Table id="cnpjTable" inset="false" mode="MultiSelect"
+					items="{
+						path: '/cnpjCollection',
+						sorter: {
+							path: 'Name'
+						}
+					}">
+					<headerToolbar>
+						<OverflowToolbar>
+							<ToolbarSpacer />
+							<SegmentedButton selectedKey="active" selectionChange=".onFilter" class="sapMSegmentedButtonNoAutoWidth">
+								<items>
+									<SegmentedButtonItem text="{i18n>lblAtivos}" key="active"/>	
+									<SegmentedButtonItem text="{i18n>lblAll}" key="all"/>
+								</items>
+							</SegmentedButton>
+							<Button id="clearCompleted" enabled="{/itemsRemovable}" icon="sap-icon://delete" press=".clearCompleted"/>
+						</OverflowToolbar>
+					</headerToolbar>
+					<columns>
+						<Column width="12em">
+							<Text text="{i18n>cnpj}" />
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+							<Text text="" />
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem vAlign="Middle">
+							<cells>
+								<!-- <ObjectIdentifier title="{cnpj}"/> -->
+								<Text text="{cnpj}" />
+								<Button icon="{ path: 'status',formatter: '.formatter.iconBtnSwichDecision'}"  
+										type="{ path: 'status',formatter: '.formatter.typeBtnSwichDecision'}"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
 			</form:SimpleForm>
 		</WizardStep>
 		<WizardStep id="OptionalInfoStep"

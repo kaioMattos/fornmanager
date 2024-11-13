@@ -1,1 +1,14 @@
 /* Enter your custom styles here */
+
+.sapUiForm .sapUiFormElementLbl>.sapMLabel {
+
+    text-align: left !important;
+    
+    width : auto;
+    
+    
+    }
+
+    .sapUiRespGridMedia-Std-Tablet.sapUiRespGridHSpace0>.sapUiRespGridSpanM2 {
+        width: 10.66666667% !important;
+    }
