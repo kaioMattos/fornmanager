@@ -42,7 +42,7 @@
 
 					<Input valueStateText="00.000.000/0001-00" id="cnpj" submit="includeCnpj"
 						placeholder="00.000.000/0001-00" value="{/cnpj}" liveChange="validCnpj"/> 
-					<Button text="Adicionar" type="Transparent" press="onPress" ariaLabelledBy="editButtonLabel">
+					<Button text="Adicionar" type="Transparent" press="includeCnpj" ariaLabelledBy="editButtonLabel">
 						<layoutData>
 							<l:GridData span="XL1 L1 M1 S1" />
 						</layoutData>
@@ -60,13 +60,13 @@
 					<headerToolbar>
 						<OverflowToolbar>
 							<ToolbarSpacer />
-							<SegmentedButton selectedKey="active" selectionChange=".onFilter" class="sapMSegmentedButtonNoAutoWidth">
+							<SegmentedButton selectedKey="active" id="swichStatusCnpj" selectionChange=".onFilterCnpj" class="sapMSegmentedButtonNoAutoWidth">
 								<items>
 									<SegmentedButtonItem text="{i18n>lblAtivos}" key="active"/>	
-									<SegmentedButtonItem text="{i18n>lblAll}" key="all"/>
+									<SegmentedButtonItem text="{i18n>lblExcluded}" key="excluded"/>
 								</items>
 							</SegmentedButton>
-							<Button id="clearCompleted" enabled="{/itemsRemovable}" icon="sap-icon://delete" press=".clearCompleted"/>
+							<!-- <Button id="clearCompleted" enabled="{/itemsRemovable}" icon="sap-icon://delete" press=".clearCompleted"/> -->
 						</OverflowToolbar>
 					</headerToolbar>
 					<columns>
@@ -83,94 +83,128 @@
 								<!-- <ObjectIdentifier title="{cnpj}"/> -->
 								<Text text="{cnpj}" />
 								<Button icon="{ path: 'status',formatter: '.formatter.iconBtnSwichDecision'}"  
-										type="{ path: 'status',formatter: '.formatter.typeBtnSwichDecision'}"/>
+										type="{ path: 'status',formatter: '.formatter.typeBtnSwichDecision'}" visible="true" press="deleteOrBackCnpj"/>
 							</cells>
 						</ColumnListItem>
 					</items>
 				</Table>
 			</form:SimpleForm>
 		</WizardStep>
-		<WizardStep id="OptionalInfoStep"
-					optional="true"
+		<WizardStep id="manufacturerStep"
 					title="{i18n>manufacturerStep}"
 					activate="onActivate">
-			<MessageStrip class="sapUiSmallMarginBottom"
-					text="You can validate steps by default with the validated='true' property of the step. The next button is always enabled."
-					showIcon="true"/>
-			<Text text="Integer pellentesque leo sit amet dui vehicula, quis ullamcorper est pulvinar. Nam in libero sem. Suspendisse arcu metus, molestie a turpis a, molestie aliquet dui. Donec ppellentesque leo sit amet dui vehicula, quis ullamcorper est pulvinar. Nam in libero sem. Suspendisse arcu metus, molestie a turpis a, molestie aliquet dui. Donec pulvinar, sapien	corper eu, posuere malesuada nisl. Integer pellentesque leo sit amet dui vehicula, quis ullamcorper est pulvinar. Nam in libero sem. Suspendisse arcu metus, molestie a turpis a, molestie aliquet dui. Donec pulvinar, sapien	"/>
-			<form:SimpleForm
-					editable="true"
-					layout="ResponsiveGridLayout">
-				<Label text="Cover photo"/>
-				<u:FileUploader
-						width="400px"
-						tooltip="Upload product cover photo to the local server"
-						style="Emphasized"
-						placeholder="Choose a file for Upload..."/>
-				<Label text="Manufacturing date"/>
-				<DatePicker
-						id="DP3"
-						displayFormat="short"/>
-				<Label text="Availability"/>
-				<SegmentedButton selectedItem="inStock">
+			<Text text="Para os CNPJs"/>
+			<Panel>
+				<FlexBox id="cnpjsStepManufacturer" direction="Column" alignItems="Start" class="sapUiSmallMarginBottom sapUiTinyMarginTop"/>
+			</Panel>
+			<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
+				<Table id="manufactureTable" inset="false" mode="MultiSelect"
+					items="{
+						path: '/manufacturerCollection',
+						parameters : {
+							$count : true
+						},
+						sorter: {
+							path: 'Name'
+						}
+					}">
+					<headerToolbar>
+						<OverflowToolbar>
+							<Title text="" id="titleManufacturer" level="H2"/>
+							<ToolbarSpacer />
+							<SegmentedButton selectedKey="active" id="swichStatusManufacture" selectionChange=".onFilterManufacture" class="sapMSegmentedButtonNoAutoWidth">
+								<items>
+									<SegmentedButtonItem text="{i18n>lblAtivos}" key="active"/>	
+									<SegmentedButtonItem text="{i18n>lblExcluded}" key="excluded"/>
+								</items>
+							</SegmentedButton>
+							<!-- <Button id="clearCompleted" enabled="{/itemsRemovable}" icon="sap-icon://delete" press=".clearCompleted"/> -->
+						</OverflowToolbar>
+					</headerToolbar>
+					<columns>
+						<Column >
+							<Text text="{i18n>manufacturerStep}" />
+						</Column>
+						<Column  demandPopin="true" hAlign="End">
+							<Text text="" />
+						</Column>
+					</columns>
 					<items>
-						<SegmentedButtonItem text="In store" id="inStock"/>
-						<SegmentedButtonItem text="In depot"/>
-						<SegmentedButtonItem text="In repository"/>
-						<SegmentedButtonItem text="Out of stock"/>
+						<ColumnListItem vAlign="Middle">
+							<cells>
+								<!-- <ObjectIdentifier title="{cnpj}"/> -->
+								<Text text="{manufacturer}"/>
+								<Button icon="{ path: 'status',formatter: '.formatter.iconBtnSwichDecision'}"  
+										type="{ path: 'status',formatter: '.formatter.typeBtnSwichDecision'}" visible="true" press="deleteOrBackManufacture"/>
+							</cells>
+						</ColumnListItem>
 					</items>
-				</SegmentedButton>
-				<Label text="Size"/>
-				<Input/>
-				<ComboBox maxWidth="100px">
-					<core:Item key="X" text="X"/>
-					<core:Item key="Y" text="Y"/>
-					<core:Item key="Z" text="Z"/>
-				</ComboBox>
+				</Table>
 			</form:SimpleForm>
 		</WizardStep>
-		<WizardStep id="PricingStep"
+		<WizardStep id="ClassStep"
 					title="{i18n>classStep}"
 					activate="onActivate">
-			<MessageStrip class="sapUiSmallMarginBottom"
-					text="You can use the wizard previousStep() and nextStep() methods to navigate from step to step without validation. Also you can use the GoToStep(step) method to scroll programmatically to previously visited steps."
-					showIcon="true"/>
-			<form:SimpleForm
-					editable="true"
-					layout="ResponsiveGridLayout">
-				<Label text="Price"/>
-				<Input value="{/productPrice}"/>
-				<Label text="Discount group"/>
-				<MultiComboBox>
-					<core:Item key="Kids" text="Kids"/>
-					<core:Item key="Teens" text="Teens"/>
-					<core:Item key="Adults" text="Adults"/>
-					<core:Item key="Elderly" text="Elderly"/>
-				</MultiComboBox>
-				<Label text=" VAT is included"/>
-				<CheckBox selected="{/productVAT}"/>
+			<Text text="Para os Fabricantes"/>
+			<Panel>
+				<FlexBox id="StepClassManufac" direction="Column" alignItems="Start" class="sapUiSmallMarginBottom sapUiTinyMarginTop"/>
+			</Panel>
+			<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
+				<Table id="classTable" inset="false" mode="MultiSelect"
+					items="{
+						path: '/classCollection',
+						sorter: {
+							path: 'Name'
+						}
+					}">
+					<headerToolbar>
+						<OverflowToolbar>
+							<Title text="" id="titleClass" level="H2"/>
+							<ToolbarSpacer />
+							<SegmentedButton selectedKey="active" id="swichStatusClass" selectionChange=".onFilterClass" class="sapMSegmentedButtonNoAutoWidth">
+								<items>
+									<SegmentedButtonItem text="{i18n>lblAtivos}" key="active"/>	
+									<SegmentedButtonItem text="{i18n>lblExcluded}" key="excluded"/>
+								</items>
+							</SegmentedButton>
+							<!-- <Button id="clearCompleted" enabled="{/itemsRemovable}" icon="sap-icon://delete" press=".clearCompleted"/> -->
+						</OverflowToolbar>
+					</headerToolbar>
+					<columns>
+						<Column >
+							<Text text="{i18n>classStep}" />
+						</Column>
+						<Column  demandPopin="true" hAlign="End">
+							<Text text="" />
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem vAlign="Middle">
+							<cells>
+								<!-- <ObjectIdentifier title="{cnpj}"/> -->
+								<Text text="{class}"/>
+								<Button icon="{ path: 'status',formatter: '.formatter.iconBtnSwichDecision'}"  
+										type="{ path: 'status',formatter: '.formatter.typeBtnSwichDecision'}" visible="true" press="deleteOrBackClass"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
 			</form:SimpleForm>
 		</WizardStep>
 		<WizardStep id="exclusivityLetterStep"
 					title="{i18n>exclusivityLetterStep}"
 					activate="onActivate">
-			<MessageStrip class="sapUiSmallMarginBottom"
-					text="You can use the wizard previousStep() and nextStep() methods to navigate from step to step without validation. Also you can use the GoToStep(step) method to scroll programmatically to previously visited steps."
-					showIcon="true"/>
+					<Text text="Nesta etapa anexe a Carta de Exclusividade"/>
 			<form:SimpleForm
+					class="sapUiSmallMarginTop"
 					editable="true"
 					layout="ResponsiveGridLayout">
-				<Label text="Price"/>
-				<Input value="{/productPrice}"/>
-				<Label text="Discount group"/>
-				<MultiComboBox>
-					<core:Item key="Kids" text="Kids"/>
-					<core:Item key="Teens" text="Teens"/>
-					<core:Item key="Adults" text="Adults"/>
-					<core:Item key="Elderly" text="Elderly"/>
-				</MultiComboBox>
-				<Label text=" VAT is included"/>
-				<CheckBox selected="{/productVAT}"/>
+				<Label text="{i18n>exclusivityLetterStep}"/>
+				<u:FileUploader
+						width="400px"
+						tooltip="Upload product cover photo to the local server"
+						style="Emphasized"
+						placeholder="Escolha um arquivo para o Upload..."/>
 			</form:SimpleForm>
 		</WizardStep>
 	</Wizard>

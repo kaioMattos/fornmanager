@@ -13,9 +13,13 @@ sap.ui.define([
                 this.branchingWizard = this.byId("wizardViewBranching");
                 this.model = new JSONModel({
                     cnpjCollection:[{
-                        cnpj:"11.111.111/1111-11",status:true
-                    },{
-                        cnpj:"11.111.111/1111-11",status:false
+                        cnpj:"11.111.111/1111-10",status:true
+                    }],
+                    manufacturerCollection:[{
+                        manufacturer:"Logística Aérea: CHC DO BRASIL TÁXI AEREO S.A.",status:true
+                    }],
+                    classCollection:[{
+                        class:"Kaio",status:true
                     }],
                     selectedBackgroundDesign: "Standard",
                     selectedShowCase: "linear",
