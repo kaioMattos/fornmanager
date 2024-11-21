@@ -1,0 +1,32 @@
+{
+	"items": [
+		
+		{
+			"id": "23004578",
+			"fileName": "Instructions.pdf",
+			"mediaType": "application/pdf",
+			"url": "test-resources/sap/m/UploadSetwithTableSampleFiles/Instructions.pdf",
+			"revision": "01",
+			"status": "In work",
+			"fileSize": 30000,
+			"lastModifiedBy": "Jane Burns",
+			"lastmodified": "10/03/21, 10:03:00 PM",
+			"documentType": "Specification",
+			"previewable": true,
+			"trustedSource": true
+		},
+		{
+			"id": "23004579",
+			"fileName": "Document.txt",
+			"mediaType": "text/plain",
+			"url": "test-resources/sap/m/UploadSetwithTableSampleFiles/Document.txt",
+			"revision": "42",
+			"status": "In work",
+			"fileSize": 420,
+			"lastModifiedBy": "Jane Burns",
+			"lastmodified": "10/03/21, 10:03:00 PM",
+			"documentType": "Document",
+			"previewable": true
+		}
+	]
+}

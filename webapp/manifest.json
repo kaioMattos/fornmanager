@@ -14,7 +14,13 @@
       "id": "@sap/generator-fiori:basic",
       "version": "1.11.1",
       "toolsId": "b0dbb2e8-4497-4206-aa55-a6764550e20b"
-    }
+    },
+    "dataSources": {
+			"documentDataSource" : {
+				"uri": "model/documents.json",
+				"type": "JSON"
+			}
+		}
   },
   "sap.ui": {
     "technology": "UI5",
@@ -52,6 +58,10 @@
       "cozy": true
     },
     "models": {
+      "documents": {
+				"type": "sap.ui.model.json.JSONModel",
+				"dataSource": "documentDataSource"
+			},
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
@@ -95,6 +105,7 @@
         }
       }
     },
+    
     "rootView": {
       "viewName": "gfex.petrobras.fornmanager.view.App",
       "type": "XML",
@@ -111,7 +122,9 @@
 					"controller/App.controller.js",
 					"controller/main.controller.js",
 					"controller/Linear.controller.js",
-					"manifest.json"
+					"manifest.json",
+          "model/mockserver.js",
+          "model/documents.json"
 				]
 			}
 		}

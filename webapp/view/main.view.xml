@@ -17,7 +17,11 @@
 							viewName="gfex.petrobras.fornmanager.view.Linear" />
 					</content>
 					<footer>
-						
+							<Bar>
+							<contentRight>
+								<Button icon="sap-icon://travel-request" text="Fale conosco" press="handleWizardSubmit"/>
+							</contentRight>
+						</Bar>
 					</footer>
 				</Page>
 			</pages>

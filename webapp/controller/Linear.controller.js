@@ -4,7 +4,12 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"gfex/petrobras/fornmanager/model/formatter",
-], function (Controller, coreLibrary,Filter,FilterOperator,formatter) {
+	"../model/mockserver",
+	"sap/m/plugins/UploadSetwithTable",
+	"sap/m/MessageToast",
+	"sap/m/MessageBox",
+], function (Controller, coreLibrary, Filter, FilterOperator, formatter,
+	MockServer, UploadSetwithTable, MessageToast, MessageBox) {
 	"use strict";
 
 	// shortcut for sap.ui.core.ValueState
@@ -14,8 +19,95 @@ sap.ui.define([
 		formatter:formatter,
 		onAfterRendering:function(){
 			this.onFilter(`active`, `cnpjCollection`,`cnpjTable`);
+			this.oMockServer.oModel = this.byId("table-uploadSet").getModel("documents");
 		},
+		onInit: function () {
+			this.documentTypes = this.getFileCategories();
+			this.oMockServer = new MockServer();
+			
+		},
+		onBeforeUploadStarts: function() {
+			// This code block is only for demonstration purpose to simulate XHR requests, hence starting the mockserver.
+			this.oMockServer.start();
+		},
+		onPluginActivated: function(oEvent) {
+			this.oUploadPluginInstance = oEvent.getParameter("oPlugin");
+		},
+		getIconSrc: function(mediaType, thumbnailUrl) {
+			return UploadSetwithTable.getIconForFileType(mediaType, thumbnailUrl);
+		},
+		onUploadCompleted: function(oEvent) {
+			const oModel = this.byId("table-uploadSet").getModel("documents");
+			const iResponseStatus = oEvent.getParameter("status");
 
+			// check for upload is sucess
+			if (iResponseStatus === 201) {
+				oModel.refresh(true);
+				setTimeout(function() {
+					MessageToast.show("Document Added");
+				}, 1000);
+			}
+			// This code block is only for demonstration purpose to simulate XHR requests, hence restoring the server to not fake the xhr requests.
+			this.oMockServer.restore();
+		},
+		onRemoveButtonPress: function(oEvent) {
+			var oTable = this.byId("table-uploadSet");
+			const aContexts = oTable.getSelectedContexts();
+			this.removeItem(aContexts[0]);
+		},
+		onRemoveHandler: function(oEvent) {
+			var oSource = oEvent.getSource();
+			const oContext = oSource.getBindingContext("documents");
+			this.removeItem(oContext);
+		},
+		removeItem: function(oContext) {
+			const oModel = this.getView().getModel("documents");
+			const oTable = this.byId("table-uploadSet");
+			const sMessage= this.getView().getModel(`i18n`).getProperty(`messageDeleteDocument`);
+			MessageBox.warning(
+				`${sMessage} ${oContext.getProperty("fileName")} ?`,
+				{
+					icon: MessageBox.Icon.WARNING,
+					actions: ["Remove", MessageBox.Action.CANCEL],
+					emphasizedAction: "Remove",
+					styleClass: "sapMUSTRemovePopoverContainer",
+					initialFocus: MessageBox.Action.CANCEL,
+					onClose: function(sAction) {
+						if (sAction !== "Remove") {
+							return;
+						}
+						var spath = oContext.getPath();
+						if (spath.split("/")[2]) {
+							var index = spath.split("/")[2];
+							var data = oModel.getProperty("/items");
+							data.splice(index, 1);
+							oModel.refresh(true);
+							if (oTable && oTable.removeSelections) {
+								oTable.removeSelections();
+							}
+						}
+					}
+				}
+			);
+		},
+		getFileCategories: function() {
+			return [
+				{categoryId: "Invoice", categoryText: "Invoice"},
+				{categoryId: "Specification", categoryText: "Specification"},
+				{categoryId: "Attachment", categoryText: "Attachment"},
+				{categoryId: "Legal Document", categoryText: "Legal Document"}
+			];
+		},
+		getFileSizeWithUnits: function(iFileSize) {
+			return UploadSetwithTable.getFileSizeWithUnits(iFileSize);
+		},
+		openPreview: function(oEvent) {
+			const oSource = oEvent.getSource();
+			const oBindingContext = oSource.getBindingContext("documents");
+			if (oBindingContext && this.oUploadPluginInstance) {
+				this.oUploadPluginInstance.openFilePreview(oBindingContext);
+			}
+		},
 		_syncSelect: function (sStepId) {
 			var oModel = this.getView().getModel();
 			oModel.setProperty('/linearWizardSelectedStep', sStepId);
@@ -69,19 +161,14 @@ sap.ui.define([
 				return item
 			});
 		},
-		deleteOrBackCnpj:function(oEvent){
-			const typeAction = oEvent.getSource().getType();
-			let status = typeAction === `Reject`?false:true;
-			const abaStatusCnpj = this.byId(`swichStatusCnpj`).getSelectedKey()
-
+		deleteCnpj:function(oEvent){
 			const cnpj = oEvent.getSource().getParent().getCells()[0].getText();
 			const collection = this.getView().getModel().getProperty(`/cnpjCollection`);
 			let cnpjs = [];
-			cnpjs = this.switchStatus(collection,status,`cnpj`, cnpj)
+			cnpjs = this.switchStatus(collection,false,`cnpj`, cnpj)
 			this.getView().getModel().setProperty("/cnpjCollection", cnpjs);
-			this.onFilter(status?`excluded`:`active`, `cnpjCollection`,`cnpjTable`);
+			this.onFilter(`active`, `cnpjCollection`,`cnpjTable`);
 			this.validateCnpjStep();
-
 		},
 		
 		onActivate: function (oEvent) {
@@ -98,18 +185,25 @@ sap.ui.define([
 		},
 		validCnpj:function(oEvent){
 			const key = oEvent.getSource().getValue();
+			const x = key.replace(/\D/g, '').match(/(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})/);
+			oEvent.getSource().setValue(!x[2] ? x[1] : x[1] + '.' + x[2] + '.' + x[3] + '/' + x[4] + (x[5] ? '-' + x[5] : ''));
 		},
-
 		includeCnpj:function(oEvent){
 			const key = this.byId(`cnpj`).getValue();
 			const regex = new RegExp(`[0-9]{2}.[0-9]{3}.[0-9]{3}/[0-9]{4}-[0-9]{2}`);
+			
 			if(!regex.test(key))
 				return
-
+			
 			const cnpjs = this.getView().getModel().getProperty(`/cnpjCollection`);
+			const findCnpjInCollec = cnpjs.find((item)=>item.cnpj === key);
+			if(findCnpjInCollec)
+				return
+			
 			cnpjs.push({cnpj:key,status:true});
 			this.getView().getModel().setProperty("/cnpjCollection", cnpjs);
 			this.validateCnpjStep();
+			this.byId(`cnpj`).setValue(``);
 		},
 		onFilter:function(oEvent=`active`, collection,table){
 			let key = typeof oEvent === `object` ? oEvent.getSource().getSelectedKey():oEvent;
