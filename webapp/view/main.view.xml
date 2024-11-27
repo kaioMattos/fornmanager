@@ -1,0 +1,30 @@
+<mvc:View
+		height="100%"
+		controllerName="gfex.petrobras.fornmanager.controller.main"
+		xmlns:core="sap.ui.core"
+		xmlns:mvc="sap.ui.core.mvc"
+		xmlns="sap.m">
+		<NavContainer id="wizardNavContainer">
+			<pages>
+				<Page
+				id="wizardContentPage"
+				showHeader="true">
+					<content>
+						<mvc:XMLView
+							id="wizardViewLinear"
+							async="true"
+							visible="{= ${/selectedShowCase} === 'linear' }"
+							viewName="gfex.petrobras.fornmanager.view.Linear" />
+					</content>
+					<footer>
+							<Bar>
+							<contentRight>
+								<Button icon="sap-icon://travel-request" text="Fale conosco" press="handleWizardSubmit"/>
+							</contentRight>
+						</Bar>
+					</footer>
+				</Page>
+			</pages>
+		</NavContainer>
+</mvc:View>
+

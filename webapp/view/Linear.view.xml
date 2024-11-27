@@ -1,0 +1,337 @@
+
+<mvc:View
+	height="100%"
+	controllerName="gfex.petrobras.fornmanager.controller.Linear"
+	xmlns:form="sap.ui.layout.form"
+	xmlns:core="sap.ui.core"
+	xmlns:u="sap.ui.unified"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:l="sap.ui.layout"
+	xmlns:t="sap.ui.table"
+	xmlns:upload="sap.m.upload"
+	xmlns="sap.m">
+	<Wizard
+		id="FornGfexWizard"
+		finishButtonText="Finish"
+		currentStep="BasicDataStep">
+		<WizardStep id="BasicDataStep"
+					title="{i18n>basicDataStep}"
+					activate="onActivate">
+					<form:SimpleForm labelSpanL="1"  labelSpanM="1" labelSpanS="6" 
+				editable="true" layout="ResponsiveGridLayout">
+				<ObjectHeader
+					binding="{/ProductCollection/0}"
+					title="Petróleo Brasileiro"
+					number="30"
+					numberUnit="{CurrencyCode}">
+					<statuses>
+						<ObjectStatus
+							text="20031-975" />
+						<ObjectStatus
+							text="SP/BR" />
+					</statuses>
+					<ObjectAttribute text="Av Paulista 901" />
+					<ObjectAttribute text="São Paulo" />
+					<!-- <ObjectAttribute
+						text="www.petronect.com.br"
+						active="true"
+						press="handleLinkObjectAttributePress" /> -->
+				</ObjectHeader>
+				</form:SimpleForm>
+		</WizardStep>
+		<WizardStep id="CnpjStep" title="{i18n>cnpjStep}" activate="onActivate">
+			<Text text="{i18n>descCnpjStep}"/>	
+			<form:SimpleForm labelSpanL="1"  labelSpanM="1" labelSpanS="6" class="sapUiLargeMarginTop"
+				editable="true" layout="ResponsiveGridLayout">
+				<form:content class="sapUiForm">
+					<!-- <Label text="{i18n>cnpj}" required="true"/> -->
+
+					<Input valueStateText="" id="cnpj" submit="includeCnpj"
+						placeholder="Insira aqui a chave do fornecedor" value="{/cnpj}"/> 
+					<Button text="Adicionar" type="Transparent" press="includeCnpj" ariaLabelledBy="editButtonLabel">
+						<layoutData>
+							<l:GridData span="XL1 L1 M1 S1" />
+						</layoutData>
+					</Button>
+				</form:content>
+			</form:SimpleForm>
+			<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
+				<Table id="cnpjTable" inset="false"
+					items="{
+						path: '/cnpjCollection',
+						sorter: {
+							path: 'Name'
+						}
+					}">
+					<headerToolbar>
+						<OverflowToolbar>
+							<ToolbarSpacer />
+							<!-- <Button id="clearCompleted" enabled="{/itemsRemovable}" icon="sap-icon://delete" press=".clearCompleted"/> -->
+						</OverflowToolbar>
+					</headerToolbar>
+					<columns>
+						<Column width="12em">
+							<Text text="{i18n>cnpj}" />
+						</Column>
+						<Column >
+							<Text text="{i18n>corporateName}" />
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+							<Text text="" />
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem vAlign="Middle">
+							<cells>
+								<!-- <ObjectIdentifier title="{cnpj}"/> -->
+								<Text text="{cnpj}" />
+								<Text text="{razãoSocial}" />
+								<Button icon="sap-icon://decline"  
+										type="Reject" visible="true" press="deleteCnpj"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</form:SimpleForm>
+		</WizardStep>
+		<WizardStep id="manufacturerStep"
+					title="{i18n>manufacturerStep}"
+					activate="onActivate">
+			<Text text="Para os CNPJs"/>
+			<Panel>
+				<FlexBox id="cnpjsStepManufacturer" direction="Column" alignItems="Start" class="sapUiSmallMarginBottom sapUiTinyMarginTop"/>
+			</Panel>
+			<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
+				<Table id="manufactureTable" inset="false" 
+					items="{
+						path: '/manufacturerCollection',
+						parameters : {
+							$count : true
+						},
+						sorter: {
+							path: 'Name'
+						}
+					}">
+					<headerToolbar>
+						<OverflowToolbar>
+							<Title text="" id="titleManufacturer" level="H2"/>
+							<ToolbarSpacer />
+							<SegmentedButton selectedKey="active" id="swichStatusManufacture" selectionChange=".onFilterManufacture" class="sapMSegmentedButtonNoAutoWidth">
+								<items>
+									<SegmentedButtonItem text="{i18n>lblAtivos}" key="active"/>	
+									<SegmentedButtonItem text="{i18n>lblExcluded}" key="excluded"/>
+								</items>
+							</SegmentedButton>
+							<!-- <Button id="clearCompleted" enabled="{/itemsRemovable}" icon="sap-icon://delete" press=".clearCompleted"/> -->
+						</OverflowToolbar>
+					</headerToolbar>
+					<columns>
+						<Column >
+							<Text text="{i18n>manufacturerStep}" />
+						</Column>
+						<Column  demandPopin="true" hAlign="End">
+							<Text text="" />
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem vAlign="Middle">
+							<cells>
+								<!-- <ObjectIdentifier title="{cnpj}"/> -->
+								<Text text="{manufacturer}"/>
+								<Button icon="{ path: 'status',formatter: '.formatter.iconBtnSwichDecision'}"  
+										type="{ path: 'status',formatter: '.formatter.typeBtnSwichDecision'}" visible="true" press="deleteOrBackManufacture"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</form:SimpleForm>
+		</WizardStep>
+		<WizardStep id="ClassStep"
+					title="{i18n>classStep}"
+					activate="onActivate">
+			<Text text="Para os Fabricantes"/>
+			<Panel>
+				<FlexBox id="StepClassManufac" direction="Column" alignItems="Start" class="sapUiSmallMarginBottom sapUiTinyMarginTop"/>
+			</Panel>
+			<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
+				<Table id="classTable" inset="false" 
+					items="{
+						path: '/classCollection',
+						sorter: {
+							path: 'Name'
+						}
+					}">
+					<headerToolbar>
+						<OverflowToolbar>
+							<Title text="" id="titleClass" level="H2"/>
+							<ToolbarSpacer />
+							<SegmentedButton selectedKey="active" id="swichStatusClass" selectionChange=".onFilterClass" class="sapMSegmentedButtonNoAutoWidth">
+								<items>
+									<SegmentedButtonItem text="{i18n>lblAtivos}" key="active"/>	
+									<SegmentedButtonItem text="{i18n>lblExcluded}" key="excluded"/>
+								</items>
+							</SegmentedButton>
+							<!-- <Button id="clearCompleted" enabled="{/itemsRemovable}" icon="sap-icon://delete" press=".clearCompleted"/> -->
+						</OverflowToolbar>
+					</headerToolbar>
+					<columns>
+						<Column >
+							<Text text="{i18n>classStep}" />
+						</Column>
+						<Column  demandPopin="true" hAlign="End">
+							<Text text="" />
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem vAlign="Middle">
+							<cells>
+								<!-- <ObjectIdentifier title="{cnpj}"/> -->
+								<Text text="{class}"/>
+								<Button icon="{ path: 'status',formatter: '.formatter.iconBtnSwichDecision'}"  
+										type="{ path: 'status',formatter: '.formatter.typeBtnSwichDecision'}" visible="true" press="deleteOrBackClass"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</form:SimpleForm>
+		</WizardStep>
+		<WizardStep id="exclusivityLetterStep"
+					title="{i18n>exclusivityLetterStep}"
+					activate="onActivate">
+					<Text text="Nesta etapa anexe a Carta de Exclusividade"/>
+				<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
+				<Table
+				id="table-uploadSet"
+				sticky="ColumnHeaders,HeaderToolbar"
+				width="auto"
+				fixedLayout="false"
+				inset="true"
+				autoPopinMode="true"
+				hiddenInPopin="None"
+				items="{path: 'documents>/items', templateShareable: false}"
+				selectionChange="onSelectionChange">
+					<headerToolbar>
+					<OverflowToolbar>
+						<Title
+								text="{i18n>documents} ({= ${documents>/items}.length})"
+								level="H2"
+						/>
+						<ToolbarSpacer />
+                    <ToolbarSeparator />
+                    <upload:ActionsPlaceholder id="uploadButton" placeholderFor="UploadButtonPlaceholder" />
+
+					</OverflowToolbar>
+				</headerToolbar>
+
+				<dependents>
+						<plugins.UploadSetwithTable
+						uploadUrl="/uploadFiles"
+						multiple="true"
+						beforeInitiatingItemUpload="onBeforeInitiatingItemUpload"
+						beforeUploadStarts="onBeforeUploadStarts"
+						itemRenamed="onDocumentRenamedSuccess"
+						uploadCompleted="onUploadCompleted"
+						onActivated="onPluginActivated"
+						cloudFilePickerEnabled="true"
+						actions="uploadButton"
+						>
+							<rowConfiguration>
+								<upload.UploadItemConfiguration
+								fileNamePath="fileName"
+								mediaTypePath="mediaType"
+								urlPath="url"
+								previewablePath="previewable"
+								fileSizePath="fileSize"
+                                isTrustedSourcePath="trustedSource"
+								/>
+							</rowConfiguration>
+						</plugins.UploadSetwithTable>
+				</dependents>
+				<columns>
+					<Column id="fileName" importance="High">
+						<header>
+							<Label text="{i18n>fileName}" />
+						</header>
+					</Column>
+					
+					<Column id="fileSize">
+						<header>
+							<Label text="{i18n>fileSize}" />
+						</header>
+					</Column>
+					<Column id="lastModified">
+						<header>
+							<Label text="{i18n>lastModified}" />
+						</header>
+					</Column>
+					<Column id="expiredData">
+						<header>
+							<Label text="{i18n>expiredData}" />
+						</header>
+					</Column>
+					<Column id="actionButton" importance="High" />
+            </columns>
+			<items>
+                <ColumnListItem
+					press="onItemPress"
+					highlight="{= ${documents>uploadState} === 'Complete' ? 'Indication05' : null }"
+                >
+
+                <!-- Cells with cell template defining content for each column (cells and columns work with 1:1 mapping) -->
+                    <cells>
+                        <HBox>
+                            <Image
+                                src="{documents>imageUrl}"
+                                class="sapMUSTItemImage sapMUSTItemIcon"
+                                visible="{= ${documents>imageUrl} !== undefined}"
+                            />
+                            <core:Icon
+                                src="{parts: ['documents>mediaType', 'documents>fileName'], formatter: '.getIconSrc' }"
+                                color="white"
+                                visible="{= ${documents>imageUrl} === undefined || ${documents>imageUrl} === '' }"
+                                class="sapMUSTItemImage sapMUSTItemIcon"
+                            />
+                            <VBox
+                                class="sapUiTinyMargin sapUiSmallMarginBegin"
+                            >
+                                <Link
+                                    text="{documents>fileName}"
+                                    press="openPreview"
+                                    class="sapUiTinyMarginBottom"
+                                />
+                                <Text text="{documents>documentType}" />
+                            </VBox>
+                        </HBox>
+                       
+                       <Text
+                            text="{parts: ['documents>fileSize'], formatter: '.getFileSizeWithUnits'}"
+                        />
+                         <VBox>
+                            <Text
+                                class="sapUiTinyMarginTop"
+                                text="{documents>lastmodified}"
+                            />
+                        </VBox>
+						<VBox>
+							<Text text="{documents>expiredData}" visible="{= ${documents>newDocument} === false}"/>
+							<DatePicker 
+							required="true"
+							visible="{= ${documents>newDocument} === true}" value="{
+							path: 'documents>expiredData',
+							type: 'sap.ui.model.type.Date'}" />
+						</VBox>
+                       <Button
+                            class="sapUiTinyMarginBegin"
+                            type="Transparent"
+                            icon="sap-icon://decline"
+                            press="onRemoveHandler"
+                        />
+                    </cells>
+                </ColumnListItem>
+            </items>				
+			</Table>
+			</form:SimpleForm>
+		</WizardStep>
+	</Wizard>
+</mvc:View>
