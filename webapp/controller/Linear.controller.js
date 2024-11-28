@@ -20,6 +20,16 @@ sap.ui.define([
 		onAfterRendering:function(){
 			this.onFilter(`active`, `cnpjCollection`,`cnpjTable`);
 			this.oMockServer.oModel = this.byId("table-uploadSet").getModel("documents");
+			const oModel = this.getView().getModel('mainService');
+			const documentId = '351'
+			oModel.read(`/CentralConsumer('${documentId}')`, {
+				success: function(oData) {
+					const a = oData;
+				},
+				error:function(oError){
+
+				}	
+			});
 		},
 		onInit: function () {
 			this.documentTypes = this.getFileCategories();

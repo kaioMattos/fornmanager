@@ -71,7 +71,7 @@
 				"type": "sap.ui.model.json.JSONModel",
 				"dataSource": "documentDataSource"
 			},
-      "": {
+      "mainService": {
         "dataSource": "mainService",
         "preload": true,
         "settings": {}
