@@ -5,7 +5,7 @@
     {
       "source": "^/sap/(.*)$",
       "target": "/sap/$1",
-      "destination": "S4D-200-No",
+      "destination": "S4D-220-No",
       "authenticationType": "none",
       "csrfProtection": false
     },

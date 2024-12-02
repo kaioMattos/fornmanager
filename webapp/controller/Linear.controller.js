@@ -9,8 +9,12 @@ sap.ui.define([
 	"sap/m/MessageToast",
 	"sap/m/MessageBox",
 	"gfex/petrobras/fornmanager/model/models",
+	"sap/m/Dialog",
+	"sap/m/Button",
+	"sap/m/library",
 ], function (Controller, coreLibrary, Filter, FilterOperator, formatter,
-	MockServer, UploadSetwithTable, MessageToast, MessageBox, model) {
+	MockServer, UploadSetwithTable, MessageToast, MessageBox, model, Dialog, Button, 
+	mobileLibrary) {
 	"use strict";
 
 	// shortcut for sap.ui.core.ValueState
@@ -22,16 +26,6 @@ sap.ui.define([
 			this._oNavContainer = this.byId("wizardNavContainer");
 			this.onFilter(`active`, `cnpjCollection`,`cnpjTable`);
 			this.oMockServer.oModel = this.byId("table-uploadSet").getModel("documents");
-			const oModel = this.getView().getModel('mainService');
-			const documentId = '351'
-			oModel.read(`/CentralConsumer('${documentId}')`, {
-				success: function(oData) {
-					const a = oData;
-				},
-				error:function(oError){
-
-				}	
-			});
 		},
 		onInit: function () {
 			this.documentTypes = this.getFileCategories();
@@ -201,21 +195,30 @@ sap.ui.define([
 			const x = key.replace(/\D/g, '').match(/(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})/);
 			oEvent.getSource().setValue(!x[2] ? x[1] : x[1] + '.' + x[2] + '.' + x[3] + '/' + x[4] + (x[5] ? '-' + x[5] : ''));
 		},
-		includeCnpj:function(oEvent){
+		includeCnpj: async function(oEvent){
 			const key = this.byId(`cnpj`).getValue();
-			const regex = new RegExp(`[0-9]{2}.[0-9]{3}.[0-9]{3}/[0-9]{4}-[0-9]{2}`);
-			
-		
-			
 			const cnpjs = this.getView().getModel().getProperty(`/cnpjCollection`);
-			const findCnpjInCollec = cnpjs.find((item)=>item.cnpj === key);
+			const findCnpjInCollec = cnpjs.find((item)=>item.cnpj === key && item.status);
 			if(findCnpjInCollec)
 				return
 			
-			cnpjs.push({cnpj:key,status:true});
+			const oCnpj = await this.getFornecedor(key);
+			if(!!oCnpj.length){
+				cnpjs.push({
+					cnpj:oCnpj[0].SupplierId,
+					razaoSocial:oCnpj[0].SupplierName,
+					status:true
+				})
+			}else{
+				const message = this.getView().getModel(`i18n`).getProperty(`messageSupNotFound`);
+				MessageBox.information(message, {
+				styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer"
+			});
+			}
 			this.getView().getModel().setProperty("/cnpjCollection", cnpjs);
 			this.validateCnpjStep();
 			this.byId(`cnpj`).setValue(``);
+			
 		},
 		onFilter:function(oEvent=`active`, collection,table){
 			let key = typeof oEvent === `object` ? oEvent.getSource().getSelectedKey():oEvent;
@@ -298,24 +301,24 @@ sap.ui.define([
 			this.setCountingTable(`titleClass`,collection.filter((item)=>(item.status)),nameClass);
 			this.validateClassStep();
 		},
-		getFornecedor: function(sValue) {
-			var aFilters = [
+		getFornecedor: async function(sValue) {
+			let aFilters = [
 				new Filter({
 					path: "SupplierId",
 					operator: FilterOperator.EQ,
 					value1: sValue
 				})
 			];
-			var fornecedor = model.getFornecedores({filters: aFilters});
 
-			fornecedor
-				.then(function(oFornecedor) {
-					this.setModel(oFornecedor, "fornecedor");
-				}.bind(this))
-				.catch(function() {
-					sap.ui.core.BusyIndicator.hide();
-					MessageBox.error(this.getText("errorFornecedor"));
-				}.bind(this));
+			try{
+				const fornecedor = await model.getFornecedores({filters: aFilters});
+				return fornecedor
+				
+			}catch(oError){
+				sap.ui.core.BusyIndicator.hide();
+				MessageBox.error(this.this.getView().getModel(`i18n`).getProperty("errorFornecedor"));
+			}
+			
 		},
 		checkRequired:function(){
 			let sError = false

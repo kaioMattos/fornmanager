@@ -13,7 +13,7 @@ sap.ui.define([
                 this.branchingWizard = this.byId("wizardViewBranching");
                 this.model = new JSONModel({
                     cnpjCollection:[{
-                        cnpj:"43.904.982/0001-59",status:true,razãoSocial:"BOMBAS GAS DISTRIBUIDORA LTDA"
+                        cnpj:"43.904.982/0001-59",status:true,razaoSocial:"BOMBAS GAS DISTRIBUIDORA LTDA"
                     }],
                     manufacturerCollection:[{
                         manufacturer:"Logística Aérea: CHC DO BRASIL TÁXI AEREO S.A.",status:true

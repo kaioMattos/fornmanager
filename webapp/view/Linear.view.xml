@@ -28,7 +28,7 @@
 					numberUnit="{CurrencyCode}">
 					<statuses>
 						<ObjectStatus
-							text="20031-975" />
+							text="22031-975" />
 						<ObjectStatus
 							text="SP/BR" />
 					</statuses>
@@ -87,7 +87,7 @@
 							<cells>
 								<!-- <ObjectIdentifier title="{cnpj}"/> -->
 								<Text text="{cnpj}" />
-								<Text text="{razãoSocial}" />
+								<Text text="{razaoSocial}" />
 								<Button icon="sap-icon://decline"  
 										type="Reject" visible="true" press="deleteCnpj"/>
 							</cells>
@@ -317,10 +317,11 @@
 						<VBox>
 							<Text text="{documents>expiredData}" visible="{= ${documents>newDocument} === false}"/>
 							<DatePicker 
-							required="true"
-							visible="{= ${documents>newDocument} === true}" value="{
-							path: 'documents>expiredData',
-							type: 'sap.ui.model.type.Date'}" />
+								required="true"
+								visible="{= ${documents>newDocument} === true}" value="{
+								path: 'documents>expiredData',
+								type: 'sap.ui.model.type.Date',
+								formatOptions: {pattern: 'dd/MM/y'}}" />
 						</VBox>
                        <Button
                             class="sapUiTinyMarginBegin"
