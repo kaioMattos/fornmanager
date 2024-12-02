@@ -1,0 +1,56 @@
+
+<mvc:View
+	height="100%"
+	controllerName="gfex.petrobras.fornmanager.controller.Linear"
+	xmlns:form="sap.ui.layout.form"
+	xmlns:core="sap.ui.core"
+	xmlns:u="sap.ui.unified"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:l="sap.ui.layout"
+	xmlns:t="sap.ui.table"
+	xmlns:upload="sap.m.upload"
+	xmlns="sap.m">
+	
+		
+			<Text text="{i18n>descCnpjStep}"/>	
+			<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
+				<Table id="cnpjTableReview" inset="false"
+					items="{
+						path: '/cnpjCollection',
+						sorter: {
+							path: 'Name'
+						}
+					}">
+					<headerToolbar>
+						<OverflowToolbar>
+							<ToolbarSpacer />
+							<Button id="clearCompleted" text="Editar" icon="sap-icon://delete" press=".clearCompleted"/>
+						</OverflowToolbar>
+					</headerToolbar>
+					<columns>
+						<Column width="12em">
+							<Text text="{i18n>cnpj}" />
+						</Column>
+						<Column >
+							<Text text="{i18n>corporateName}" />
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+							<Text text="" />
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem vAlign="Middle">
+							<cells>
+								<!-- <ObjectIdentifier title="{cnpj}"/> -->
+								<Text text="{cnpj}" />
+								<Text text="{razãoSocial}" />
+								<Button icon="sap-icon://decline"  
+										type="Reject" visible="true" press="deleteCnpj"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</form:SimpleForm>
+			
+</mvc:View>

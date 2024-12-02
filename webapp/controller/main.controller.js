@@ -40,7 +40,9 @@ sap.ui.define([
                 oProductWizard.setBackgroundDesign(event.getParameter("selectedItem").getKey());
                 oBranchingWizard.setBackgroundDesign(event.getParameter("selectedItem").getKey());
             },
-    
+            completedHandler: function () {
+                this._oNavContainer.to(this.byId("reviewContentPage"));
+            },
             onCurrentStepChangeBranching: function (event) {
                 var oBranchingWizard = this.branchingWizard.byId("BranchingWizard");
     

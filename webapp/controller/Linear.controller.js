@@ -18,6 +18,7 @@ sap.ui.define([
 	return Controller.extend("gfex.petrobras.fornmanager.controller.Linear", {
 		formatter:formatter,
 		onAfterRendering:function(){
+			this._oNavContainer = this.byId("wizardNavContainer");
 			this.onFilter(`active`, `cnpjCollection`,`cnpjTable`);
 			this.oMockServer.oModel = this.byId("table-uploadSet").getModel("documents");
 			const oModel = this.getView().getModel('mainService');
@@ -34,6 +35,7 @@ sap.ui.define([
 		onInit: function () {
 			this.documentTypes = this.getFileCategories();
 			this.oMockServer = new MockServer();
+			
 			
 		},
 		onBeforeUploadStarts: function() {
@@ -294,6 +296,26 @@ sap.ui.define([
 			const nameClass = this.getView().getModel(`i18n`).getProperty(`classStep`);
 			this.setCountingTable(`titleClass`,collection.filter((item)=>(item.status)),nameClass);
 			this.validateClassStep();
+		},
+		checkRequired:function(){
+			let sError = false
+			let aItemsDocuments = this.byId('table-uploadSet').getItems();
+			aItemsDocuments.forEach(function(item) {
+				const input = item.getCells()[3].getItems()[1];
+				const visible = input.getVisible();
+				const value = input.getValue();
+				if(input && value.length < 1){
+					input.setValueState('Error');
+					input.focus();
+					sError = true
+				}else{
+					input.setValueState('None');
+				}
+			})
+			return sError
+		},
+		completedHandler: function () {
+			const validateRequireds = this.checkRequired();
 		},
 	});
 });

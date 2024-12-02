@@ -24,6 +24,24 @@
 						</Bar>
 					</footer>
 				</Page>
+				<Page
+				id="reviewContentPage"
+				showHeader="true">
+					<content>
+						<mvc:XMLView
+							id="reviewViewLinear"
+							async="true"
+							visible="{= ${/selectedShowCase} === 'review' }"
+							viewName="gfex.petrobras.fornmanager.view.Review" />
+					</content>
+					<footer>
+							<Bar>
+							<contentRight>
+								<Button icon="sap-icon://travel-request" text="Fale conosco" press="handleWizardSubmit"/>
+							</contentRight>
+						</Bar>
+					</footer>
+				</Page>
 			</pages>
 		</NavContainer>
 </mvc:View>
