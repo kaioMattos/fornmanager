@@ -298,18 +298,23 @@ sap.ui.define([
 			this.setCountingTable(`titleClass`,collection.filter((item)=>(item.status)),nameClass);
 			this.validateClassStep();
 		},
-		getFornecedor: function() {
-			
-			var retailers = model.getFornecedores();
+		getFornecedor: function(sValue) {
+			var aFilters = [
+				new Filter({
+					path: "SupplierId",
+					operator: FilterOperator.EQ,
+					value1: sValue
+				})
+			];
+			var fornecedor = model.getFornecedores({filters: aFilters});
 
-			retailers
-				.then(function(oItemsRetailers) {
-					this.setModel(oItemsRetailers, "retailers");
-					this.getHistoric(this.filterBackend());
+			fornecedor
+				.then(function(oFornecedor) {
+					this.setModel(oFornecedor, "fornecedor");
 				}.bind(this))
 				.catch(function() {
 					sap.ui.core.BusyIndicator.hide();
-					MessageBox.error(this.getText("errorRetailers"));
+					MessageBox.error(this.getText("errorFornecedor"));
 				}.bind(this));
 		},
 		checkRequired:function(){

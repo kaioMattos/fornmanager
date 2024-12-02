@@ -7,7 +7,10 @@ sap.ui.define(
   
       return BaseController.extend("gfex.petrobras.fornmanager.controller.App", {
         onInit() {
-        }
+        },
+        getText: function(sKey, aArgs, bIgnoreKeyFallback) {
+          return this.getResourceBundle().getText(sKey, aArgs, bIgnoreKeyFallback);
+        },
       });
     }
   );
