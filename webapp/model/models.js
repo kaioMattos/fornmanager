@@ -1,7 +1,7 @@
 sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/Device",
-	"com/swift/zminhas-entregas/model/connector"
+	"gfex/petrobras/fornmanager/model/connector"
 
 ], function(JSONModel, Device, connector) {
 	"use strict";
@@ -27,8 +27,8 @@ sap.ui.define([
 			});
 		},
 
-		getRetailers: function() {
-			return connector.readDataSource("/BuscaVarejistaSet").then(function(result) {
+		getFornecedores: function(options) {
+			return connector.readDataSource("/CentralConsumer", options).then(function(result) {
 				var oData = result.oData.results;
 				return oData;
 			});

@@ -16,15 +16,7 @@
       "toolsId": "b0dbb2e8-4497-4206-aa55-a6764550e20b"
     },
     "dataSources": {
-      "mainService": {
-        "uri": "/sap/opu/odata/sap/YESB_GFEX/",
-        "type": "OData",
-        "settings": {
-          "annotations": [],
-          "localUri": "localService/metadata.xml",
-          "odataVersion": "2.0"
-        }
-      },
+     
 			"documentDataSource" : {
 				"uri": "model/documents.json",
 				"type": "JSON"
@@ -71,11 +63,6 @@
 				"type": "sap.ui.model.json.JSONModel",
 				"dataSource": "documentDataSource"
 			},
-      "mainService": {
-        "dataSource": "mainService",
-        "preload": true,
-        "settings": {}
-      },
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {

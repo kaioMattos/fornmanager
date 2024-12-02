@@ -8,7 +8,7 @@ sap.ui.define([
 	"sap/m/plugins/UploadSetwithTable",
 	"sap/m/MessageToast",
 	"sap/m/MessageBox",
-	"com/swift/zminhas-entregas/model/models",
+	"gfex/petrobras/fornmanager/model/models",
 ], function (Controller, coreLibrary, Filter, FilterOperator, formatter,
 	MockServer, UploadSetwithTable, MessageToast, MessageBox, model) {
 	"use strict";
@@ -298,8 +298,9 @@ sap.ui.define([
 			this.setCountingTable(`titleClass`,collection.filter((item)=>(item.status)),nameClass);
 			this.validateClassStep();
 		},
-		getRetailers: function() {
-			var retailers = model.getRetailers();
+		getFornecedor: function() {
+			
+			var retailers = model.getFornecedores();
 
 			retailers
 				.then(function(oItemsRetailers) {
