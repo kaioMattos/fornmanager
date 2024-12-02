@@ -1,23 +1,48 @@
 sap.ui.define([
-    "sap/ui/model/json/JSONModel",
-    "sap/ui/Device"
-], 
-    /**
-     * provide app-view type models (as in the first "V" in MVVC)
-     * 
-     * @param {typeof sap.ui.model.json.JSONModel} JSONModel
-     * @param {typeof sap.ui.Device} Device
-     * 
-     * @returns {Function} createDeviceModel() for providing runtime info for the device the UI5 app is running on
-     */
-    function (JSONModel, Device) {
-        "use strict";
+	"sap/ui/model/json/JSONModel",
+	"sap/ui/Device",
+	"com/swift/zminhas-entregas/model/connector"
 
-        return {
-            createDeviceModel: function () {
-                var oModel = new JSONModel(Device);
-                oModel.setDefaultBindingMode("OneWay");
-                return oModel;
-        }
-    };
+], function(JSONModel, Device, connector) {
+	"use strict";
+
+	return {
+
+        createDeviceModel: function () {
+            var oModel = new JSONModel(Device);
+            oModel.setDefaultBindingMode("OneWay");
+            return oModel;
+        },
+
+		createShipping: function(data) {
+			return connector.create("/CriarRemessaSet", data).then(function(oData, oResponse) {
+				return oData;
+			});
+		},
+
+		getDetails: function(options) {
+			return connector.readDataSource("/BuscaQuiriusSet", options).then(function(result) {
+				var oData = result.oData.results;
+				return oData;
+			});
+		},
+
+		getRetailers: function() {
+			return connector.readDataSource("/BuscaVarejistaSet").then(function(result) {
+				var oData = result.oData.results;
+				return oData;
+			});
+		},
+
+		getHistoric: function(options) {
+			return connector.readDataSource("/DetalheDocumentosSet", options).then(function(result) {
+				var oData = result.oData.results;
+				return oData;
+			});
+		},
+		
+		deleteRemmitance: function(sNumOrder) {
+			return connector.remove(sNumOrder);
+		}
+	};
 });

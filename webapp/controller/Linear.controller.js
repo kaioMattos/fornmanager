@@ -8,8 +8,9 @@ sap.ui.define([
 	"sap/m/plugins/UploadSetwithTable",
 	"sap/m/MessageToast",
 	"sap/m/MessageBox",
+	"com/swift/zminhas-entregas/model/models",
 ], function (Controller, coreLibrary, Filter, FilterOperator, formatter,
-	MockServer, UploadSetwithTable, MessageToast, MessageBox) {
+	MockServer, UploadSetwithTable, MessageToast, MessageBox, model) {
 	"use strict";
 
 	// shortcut for sap.ui.core.ValueState
@@ -296,6 +297,19 @@ sap.ui.define([
 			const nameClass = this.getView().getModel(`i18n`).getProperty(`classStep`);
 			this.setCountingTable(`titleClass`,collection.filter((item)=>(item.status)),nameClass);
 			this.validateClassStep();
+		},
+		getRetailers: function() {
+			var retailers = model.getRetailers();
+
+			retailers
+				.then(function(oItemsRetailers) {
+					this.setModel(oItemsRetailers, "retailers");
+					this.getHistoric(this.filterBackend());
+				}.bind(this))
+				.catch(function() {
+					sap.ui.core.BusyIndicator.hide();
+					MessageBox.error(this.getText("errorRetailers"));
+				}.bind(this));
 		},
 		checkRequired:function(){
 			let sError = false
