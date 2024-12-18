@@ -12,9 +12,11 @@ sap.ui.define([
 	"sap/m/Dialog",
 	"sap/m/Button",
 	"sap/m/library",
+	"sap/ui/core/util/File",
+	'sap/base/util/uid'
 ], function (Controller, coreLibrary, Filter, FilterOperator, formatter,
 	MockServer, UploadSetwithTable, MessageToast, MessageBox, model, Dialog, Button, 
-	mobileLibrary) {
+	mobileLibrary,File, uid) {
 	"use strict";
 
 	// shortcut for sap.ui.core.ValueState
@@ -23,6 +25,7 @@ sap.ui.define([
 	return Controller.extend("gfex.petrobras.fornmanager.controller.Linear", {
 		formatter:formatter,
 		onAfterRendering:function(){
+			
 			this._oNavContainer = this.byId("wizardNavContainer");
 			this.onFilter(`active`, `cnpjCollection`,`cnpjTable`);
 			this.oMockServer.oModel = this.byId("table-uploadSet").getModel("documents");
@@ -30,8 +33,6 @@ sap.ui.define([
 		onInit: function () {
 			this.documentTypes = this.getFileCategories();
 			this.oMockServer = new MockServer();
-			
-			
 		},
 		onBeforeUploadStarts: function() {
 			// This code block is only for demonstration purpose to simulate XHR requests, hence starting the mockserver.
@@ -109,11 +110,13 @@ sap.ui.define([
 			return UploadSetwithTable.getFileSizeWithUnits(iFileSize);
 		},
 		openPreview: function(oEvent) {
-			const oSource = oEvent.getSource();
-			const oBindingContext = oSource.getBindingContext("documents");
-			if (oBindingContext && this.oUploadPluginInstance) {
-				this.oUploadPluginInstance.openFilePreview(oBindingContext);
-			}
+			let oDocument = oEvent.getSource().getBindingContext('documents').getObject();
+			const type = oDocument.mediaType;
+
+			if(type==="text/plain" || type==="application/pdf" || type==="application/msword"){
+				const fContent =atob(oDocument.file);
+				File.save(fContent, oDocument.fileName, oDocument.extension, type);
+			}						 
 		},
 		_syncSelect: function (sStepId) {
 			var oModel = this.getView().getModel();
@@ -224,7 +227,8 @@ sap.ui.define([
 			let key = typeof oEvent === `object` ? oEvent.getSource().getSelectedKey():oEvent;
 			let tabFilters = [];
 			let aData = this.getView().getModel().getProperty(`/${collection}`);
-			
+			if(!aData)
+				return
 			if(key === "active"){
 			 	aData = aData.filter((cnpj)=>(cnpj.status))
 				tabFilters.push(new Filter("status", FilterOperator.EQ, true));
@@ -316,15 +320,15 @@ sap.ui.define([
 				
 			}catch(oError){
 				sap.ui.core.BusyIndicator.hide();
-				MessageBox.error(this.this.getView().getModel(`i18n`).getProperty("errorFornecedor"));
+				MessageBox.error(this.getView().getModel(`i18n`).getProperty("errorFornecedor"));
 			}
 			
 		},
-		checkRequired:function(){
+		checkDocuments:function(){
 			let sError = false
 			let aItemsDocuments = this.byId('table-uploadSet').getItems();
 			aItemsDocuments.forEach(function(item) {
-				const input = item.getCells()[3].getItems()[1];
+				const input = item.getCells()[2].getItems()[1];
 				const visible = input.getVisible();
 				const value = input.getValue();
 				if(input && value.length < 1){
@@ -337,8 +341,107 @@ sap.ui.define([
 			})
 			return sError
 		},
-		completedHandler: function () {
-			const validateRequireds = this.checkRequired();
+		checkModels:function(model){
+			let bValid = !!this.getView().getModel().getProperty(`/${model}`).find((cnpj)=>(cnpj.status));
+			return bValid
 		},
+
+		checkRequired:function(){
+			let bDocuments = this.checkDocuments();
+			let bCNPJ = this.checkModels('cnpjCollection');
+			let bManufacture = this.checkModels('manufacturerCollection');
+			let bClass = this.checkModels('classCollection');
+			return (bDocuments && bCNPJ && bManufacture && bClass)
+		},
+		assembleDocuments:function(){
+			return {
+				file:'',
+				nameFile:'',
+				extension:'',
+				expiredDate:'',
+				createdAt:'',
+				updatedAt:'',
+				documentId:''
+			}
+		},
+		assembleEntrySupHana:function(){
+			const documentId = this.getView().getModel().getProperty(`/supplierS4`).DocumentId
+			const cnpj= JSON.stringify(this.getView().getModel().getProperty(`/cnpjCollection`));
+			const manufacturer= JSON.stringify(this.getView().getModel().getProperty(`/manufacturerCollection`));
+			const sClass = JSON.stringify(this.getView().getModel().getProperty(`/classCollection`));
+			return {
+				documentId,
+				cnpj,
+				manufacturer,
+				class:sClass,
+				validatedPetro:'solicitacao enviada',
+				createdAt: new Date(),
+				updatedAt: new Date()
+			}
+		},
+		completedHandler: async function () {
+			const validateRequireds = this.checkRequired();
+			if(!validateRequireds)
+				return
+			const oEntry = this.assembleEntrySupHana();
+			try {
+				const createdForn = await model.createFornHana(oEntry);
+			}catch(err){
+				sap.ui.core.BusyIndicator.hide();
+				MessageBox.error(this.getView().getModel(`i18n`).getProperty("errorFornecedor"));
+			}
+
+		},
+		convertBinaryToHex: function(buffer) {
+			return Array.prototype.map.call(new Uint8Array(buffer), function(x) {
+				return ("00" + x.toString(16)).slice(-2);
+			}).join("");
+		},
+	
+		assembleItemDocument: function(oFile, b64){
+			return {
+				id: uid(), // generate random id if no id sent from response.
+				fileName: oFile.name.split('.')[0],
+				extension: oFile.name.split('.')[1],
+				mediaType: oFile.type,
+				uploadState: "Complete",
+				revision: "00",
+				fileSize: oFile.size,
+				lastmodified: new Date(),
+				documentType: "Invoice",
+				newDocument: true,
+				expiredData: "",
+				file: b64.replace('data:application/pdf;base64,',''),
+				url: "",
+				status: "",
+				lastModifiedBy: ""
+			}
+		},
+		readFile: function (file){
+			return new Promise((resolve, reject) => {
+			  var fr = new FileReader();  
+			  fr.onload = () => {
+				resolve(fr.result)
+			  };
+			  fr.onerror = reject;
+			  fr.readAsDataURL(file);
+			});
+		  },
+		onChange: async function(oEvent){
+			const oModel = this.getView().getModel('documents');
+			try{
+				var oFile = oEvent.getParameter("files")[0];
+				const sFileBase64 = await this.readFile(oFile);
+				const oDocument =this.assembleItemDocument(oFile,sFileBase64);  
+				oModel.getProperty("/items").unshift(oDocument);
+				oModel.refresh(true);
+				setTimeout(function() {
+					MessageToast.show("Documento Adicionado");
+				}, 1000);
+			}catch(err){
+				MessageBox.error(this.getView().getModel(`i18n`).getProperty("errorLoadDocument"));
+			}
+	
+		}
 	});
 });

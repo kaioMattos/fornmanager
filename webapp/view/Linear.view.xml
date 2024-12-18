@@ -22,18 +22,18 @@
 					<form:SimpleForm labelSpanL="1"  labelSpanM="1" labelSpanS="6" 
 				editable="true" layout="ResponsiveGridLayout">
 				<ObjectHeader
-					binding="{/ProductCollection/0}"
-					title="Petróleo Brasileiro"
-					number="30"
+					binding="{/supplierS4/}"
+					title="{SupplierName}"
+					number="{SupplierId}"
 					numberUnit="{CurrencyCode}">
 					<statuses>
 						<ObjectStatus
-							text="22031-975" />
+							text="{PostalCode}" />
 						<ObjectStatus
-							text="SP/BR" />
+							text="{State}/{Country}" />
 					</statuses>
-					<ObjectAttribute text="Av Paulista 901" />
-					<ObjectAttribute text="São Paulo" />
+					<ObjectAttribute text="{Street}" />
+					<ObjectAttribute text="{District}" />
 					<!-- <ObjectAttribute
 						text="www.petronect.com.br"
 						active="true"
@@ -220,8 +220,11 @@
 						/>
 						<ToolbarSpacer />
                     <ToolbarSeparator />
+					    <u:FileUploader buttonOnly="true" id="fileUpload" change="onChange" fileType="pdf" mimeType="pdf" buttonText="Upload"  />
+						<!--<Button text="Upload" type="Default" press="pressFileUploader" ariaLabelledBy="editButtonLabel"/>
+						
                     <upload:ActionsPlaceholder id="uploadButton" placeholderFor="UploadButtonPlaceholder" />
-
+					-->
 					</OverflowToolbar>
 				</headerToolbar>
 
@@ -256,11 +259,7 @@
 						</header>
 					</Column>
 					
-					<Column id="fileSize">
-						<header>
-							<Label text="{i18n>fileSize}" />
-						</header>
-					</Column>
+					
 					<Column id="lastModified">
 						<header>
 							<Label text="{i18n>lastModified}" />
@@ -305,13 +304,11 @@
                             </VBox>
                         </HBox>
                        
-                       <Text
-                            text="{parts: ['documents>fileSize'], formatter: '.getFileSizeWithUnits'}"
-                        />
+                       
                          <VBox>
                             <Text
                                 class="sapUiTinyMarginTop"
-                                text="{documents>lastmodified}"
+                                text="{path: 'documents>lastmodified', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd/MM/y HH:mm'}}"
                             />
                         </VBox>
 						<VBox>

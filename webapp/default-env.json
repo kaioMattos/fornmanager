@@ -1,0 +1,38 @@
+{
+    "destinations":[
+        {
+            "name":"gfexcap",
+            "url":"https://petroleo-brasileiro-s-a---petrobras-devcfpb-petrobrasde2682cd1e.cfapps.br10.hana.ondemand.com",
+            "forwardAuthToken":true
+        }
+    ],
+    "VCAP_SERVICES": {
+		"xsuaa": [
+			{
+				"tags": [
+					"xsuaa"
+				],
+				"instance_guid": "15176f0f-bed9-46ba-afbe-c9ba88c7aae8",
+				
+				"binding_guid": "1aa4d565-87df-4ce5-b90f-0f40e4d979cb",
+				"credentials": {
+					"tenantmode": "dedicated",
+					"sburl": "https://internal-xsuaa.authentication.br10.hana.ondemand.com",
+					"subaccountid": "53636f10-d5bd-4c78-a821-86724c9ef15f",
+					"credential-type": "instance-secret",
+					"clientid": "sb-gfexbackend!t302",
+					"xsappname": "gfexbackend!t302",
+					"clientsecret": "iX3qL8+HBCh098X6+WID3btXiIs=",
+					"serviceInstanceId": "15176f0f-bed9-46ba-afbe-c9ba88c7aae8",
+					"url": "https://devcfpb.authentication.br10.hana.ondemand.com",
+					"uaadomain": "authentication.br10.hana.ondemand.com",
+					"apiurl": "https://api.authentication.br10.hana.ondemand.com",
+					"identityzone": "devcfpb",
+					"identityzoneid": "53636f10-d5bd-4c78-a821-86724c9ef15f",
+					"tenantid": "53636f10-d5bd-4c78-a821-86724c9ef15f",
+					"zoneid": "53636f10-d5bd-4c78-a821-86724c9ef15f"
+				}
+			}
+		]
+	}
+}

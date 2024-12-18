@@ -16,6 +16,9 @@ server:
             - /test-resources
           url: https://ui5.sap.com
         backend:
+          - path: /odata/v2/
+            url: https://petroleo-brasileiro-s-a---petrobras-devcfpb-petrobrasde2682cd1e.cfapps.br10.hana.ondemand.com
+            destination: gfexcap
           - path: /sap
             url: http://sccs4dno:9999
             client: '220'
@@ -38,6 +41,10 @@ server:
         mountPath: /
         services:
           - urlPath: /sap/opu/odata/sap/YESB_GFEX
+            metadataPath: ./webapp/localService/metadata.xml
+            mockdataPath: ./webapp/localService/data
+            generateMockData: true
+          - urlPath: /odata/v2/catalog
             metadataPath: ./webapp/localService/metadata.xml
             mockdataPath: ./webapp/localService/data
             generateMockData: true

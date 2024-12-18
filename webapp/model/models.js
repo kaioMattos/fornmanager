@@ -28,8 +28,21 @@ sap.ui.define([
 		},
 
 		getFornecedores: function(options) {
-			return connector.readDataSource("/CentralConsumer", options).then(function(result) {
+			return connector.readDataSource("/CentralConsumer", options, '_oDataModel').then(function(result) {
 				var oData = result.oData.results;
+				return oData;
+			});
+		},
+
+		getFornecedorHana: function(options) {
+			return connector.readDataSource("/Suppliers", options,'_oDataModelHana').then(function(result) {
+				var oData = result.oData.results;
+				return oData;
+			});
+		},
+
+		createFornHana: function(data) {
+			return connector.create("/Suppliers", data).then(function(oData, oResponse) {
 				return oData;
 			});
 		},
