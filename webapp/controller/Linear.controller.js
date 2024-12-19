@@ -13,10 +13,11 @@ sap.ui.define([
 	"sap/m/Button",
 	"sap/m/library",
 	"sap/ui/core/util/File",
-	'sap/base/util/uid'
+	'sap/base/util/uid',
+	'sap/ui/model/json/JSONModel',
 ], function (Controller, coreLibrary, Filter, FilterOperator, formatter,
 	MockServer, UploadSetwithTable, MessageToast, MessageBox, model, Dialog, Button, 
-	mobileLibrary,File, uid) {
+	mobileLibrary,File, uid, JSONModel) {
 	"use strict";
 
 	// shortcut for sap.ui.core.ValueState
@@ -126,12 +127,12 @@ sap.ui.define([
 		validateCnpjStep: function () {
 			let oCnpjStep = this.byId(`CnpjStep`);
 			let manufacturerStep = this.byId(`manufacturerStep`);
-			let oClassStep = this.byId(`ClassStep`);
+			let oClassStep = this.byId(`classStep`);
 			let oExclusiLetterStep = this.byId(`exclusivityLetterStep`);
 			let bIsValid = !!this.getView().getModel().getProperty(`/cnpjCollection`).find((cnpj)=>(cnpj.status));
 
 
-			this.assembleCnpjManufacturer();
+			//this.assembleManufacturer();
 			oCnpjStep.setValidated(bIsValid);
 			manufacturerStep.setBlocked(!bIsValid);
 			oClassStep.setBlocked(!bIsValid);
@@ -140,20 +141,20 @@ sap.ui.define([
 		validateManufactureStep: function () {
 			
 			let manufacturerStep = this.byId(`manufacturerStep`);
-			let oClassStep = this.byId(`ClassStep`);
+			let oClassStep = this.byId(`classStep`);
 			let oExclusiLetterStep = this.byId(`exclusivityLetterStep`);
 			let bIsValid = !!this.getView().getModel().getProperty(`/manufacturerCollection`).find((item)=>(item.status));
 			let bIsValidClass = !!this.getView().getModel().getProperty(`/classCollection`).find((item)=>(item.status));
 
 
-			this.assembleManufacturerClass();
+			//this.assembleManufacturerClass();
 			manufacturerStep.setValidated(bIsValid);
 			oClassStep.setBlocked(!bIsValid);
 			oExclusiLetterStep.setBlocked(!bIsValid);
 			
 		},
 		validateClassStep: function () {
-			let oClassStep = this.byId(`ClassStep`);
+			let oClassStep = this.byId(`classStep`);
 			let oExclusiLetterStep = this.byId(`exclusivityLetterStep`);
 			let bIsValid = !!this.getView().getModel().getProperty(`/classCollection`).find((item)=>(item.status));
 			oClassStep.setValidated(bIsValid);
@@ -181,7 +182,7 @@ sap.ui.define([
 			this.validateCnpjStep();
 		},
 		
-		onActivate: function (oEvent) {
+		onActivate: async function (oEvent) {
 			var sCurrentStepId = oEvent.getParameter("id");
 			sCurrentStepId = sCurrentStepId.split('-').pop();
 
@@ -190,7 +191,10 @@ sap.ui.define([
 			if (sCurrentStepId === 'CnpjStep') {
 				this.validateCnpjStep();
 			} else if(sCurrentStepId === `manufacturerStep`){
+				await this.assembleManufacturer();
 				this.validateManufactureStep();
+			} else if(sCurrentStepId === `classStep`){
+				await this.assembleClass();
 			}
 		},
 		validCnpj:function(oEvent){
@@ -208,7 +212,7 @@ sap.ui.define([
 			const oCnpj = await this.getFornecedor(key);
 			if(!!oCnpj.length){
 				cnpjs.push({
-					cnpj:oCnpj[0].SupplierId,
+					cnpj:oCnpj[0].DocumentId,
 					razaoSocial:oCnpj[0].SupplierName,
 					status:true
 				})
@@ -250,23 +254,95 @@ sap.ui.define([
 				panelManufac.addItem(oText);
 			})
 			const sClass= this.getView().getModel(`i18n`).getProperty(`classStep`);
-			this.setCountingTable(`titleClass`, collectionClass.filter((item)=>(item.status)),sClass);
+			this.setCountingTable(`titleClass`, collectionClass.filter((item)=>(item.status)).length,sClass);
 		},
-		assembleCnpjManufacturer:function(){
-			const panelCnpj = this.byId(`cnpjsStepManufacturer`);
-			const oModel = this.getView().getModel().getProperty(`/cnpjCollection`);
-			const collectionManufacturer = this.getView().getModel().getProperty(`/manufacturerCollection`);
-			const cnpjs = oModel.filter((cnpj)=>cnpj.status);
+		fillInfoListInPanel: function(obj){
+			const panelCnpj = this.byId(obj.panel);						
 			panelCnpj.removeAllItems();
-			cnpjs.forEach(function(cnpj) {
-				const oText = new sap.m.Text( {text:cnpj.cnpj});
+			obj.collection.forEach(function(item) {
+				const oText = new sap.m.Text({text:item[obj.attribute]});
 				panelCnpj.addItem(oText);
-			})
-			const sManufacturer = this.getView().getModel(`i18n`).getProperty(`manufacturerStep`);
-			this.setCountingTable(`titleManufacturer`,collectionManufacturer.filter((item)=>(item.status)),sManufacturer);
+			})				
+			this.setCountingTable(obj.titleCountTable, obj.countLinesTable, obj.i18nManufacturer);
 		},
-		setCountingTable:function(bId, oModel, sTitle){
-			this.byId(`${bId}`).setText(`(${oModel.length}) ${sTitle}`)
+		getDataManufacturer: async function(aFilter){
+		
+			try{
+				const oData = await model.getManufacture({filters:aFilter});
+				const manufacturerCollection = oData.map((item)=>({
+					manufacturer:item.ManufacturerNumber,
+					status:true
+				}))
+				return manufacturerCollection
+			}catch(err){
+				return []
+			}
+			
+		},
+		getDataClass: async function(aCnpj, aManufacturer){
+			const aFilterCnpj  = new sap.ui.model.Filter({
+				filters: aCnpj,
+				and : false
+			});
+			const aFilterManufacturer  = new sap.ui.model.Filter({
+				filters: aManufacturer,
+				and : false
+			});
+			try{
+				const oData = await model.getClass({filters:[aFilterCnpj,aFilterManufacturer], and:true});
+				const classCollection = oData.map((item)=>({
+					class:item.ClassDescription,
+					status:true
+				}))
+				return classCollection
+			}catch(err){
+				return []
+			}
+			
+		},
+		assembleManufacturer: async function(){
+
+			const cnpjCollection = this.getView().getModel().getProperty(`/cnpjCollection`);
+			const aFilter = cnpjCollection.map((item)=>(new Filter("DocumentId", FilterOperator.EQ, item.cnpj)));			
+			
+			const oDataManufacture = await this.getDataManufacturer(aFilter);
+			this.getView().getModel().setProperty("/manufacturerCollection", oDataManufacture);
+			
+			const sManufacturer = this.getView().getModel(`i18n`).getProperty(`manufacturerStep`);
+			const oParams = {
+				panel:'cnpjsStepManufacturer',
+				collection:cnpjCollection,
+				attribute:'cnpj',
+				countLinesTable:oDataManufacture.length,
+				titleCountTable:'titleManufacturer',
+				i18nManufacturer:sManufacturer
+			}	
+			this.fillInfoListInPanel(oParams);			
+		},
+		assembleClass: async function(){
+
+			const cnpjCollection = this.getView().getModel().getProperty(`/cnpjCollection`);
+			const manufacturerCollection = this.getView().getModel().getProperty(`/manufacturerCollection`).filter((item)=>(item.status));
+			const aFilterCnpj = cnpjCollection.map((item)=>(new Filter("DocumentId", FilterOperator.EQ, item.cnpj)));			
+			const aFilterManufacturer = manufacturerCollection.map((item)=>(new Filter("ManufacturerNumber", FilterOperator.EQ, item.manufacturer)));			
+			
+			const oDataClass = await this.getDataClass(aFilterCnpj,aFilterManufacturer);
+			this.getView().getModel().setProperty("/classCollection", oDataClass);
+			
+			const sClass = this.getView().getModel(`i18n`).getProperty(`classStep`);
+			const oParams = {
+				panel:'StepClassManufac',
+				collection:manufacturerCollection,
+				attribute:'manufacturer',
+				countLinesTable:oDataClass.length,
+				titleCountTable:'titleClass',
+				i18nManufacturer:sClass
+			}	
+			this.fillInfoListInPanel(oParams);
+					
+		},
+		setCountingTable:function(bId, count, sTitle){
+			this.byId(`${bId}`).setText(`(${count}) ${sTitle}`)
 		},
 		onFilterManufacture:function(oEvent){
 			this.onFilter(oEvent, `manufacturerCollection`,`manufactureTable`);
@@ -288,7 +364,7 @@ sap.ui.define([
 			this.getView().getModel().setProperty("/manufacturerCollection", aManufacturer);
 			this.onFilter(status?`excluded`:`active`, `manufacturerCollection`,`manufactureTable`);
 			const sManufacturer = this.getView().getModel(`i18n`).getProperty(`manufacturerStep`);
-			this.setCountingTable(`titleManufacturer`,collection.filter((item)=>(item.status)),sManufacturer);
+			this.setCountingTable(`titleManufacturer`,collection.filter((item)=>(item.status)).length,sManufacturer);
 			this.validateManufactureStep();
 		},
 		deleteOrBackClass:function(oEvent){
@@ -302,13 +378,13 @@ sap.ui.define([
 			this.getView().getModel().setProperty("/classCollection", aClass);
 			this.onFilter(status?`excluded`:`active`, `classCollection`,`classTable`);
 			const nameClass = this.getView().getModel(`i18n`).getProperty(`classStep`);
-			this.setCountingTable(`titleClass`,collection.filter((item)=>(item.status)),nameClass);
+			this.setCountingTable(`titleClass`,collection.filter((item)=>(item.status)).length,nameClass);
 			this.validateClassStep();
 		},
 		getFornecedor: async function(sValue) {
 			let aFilters = [
 				new Filter({
-					path: "SupplierId",
+					path: "DocumentId",
 					operator: FilterOperator.EQ,
 					value1: sValue
 				})
@@ -331,7 +407,7 @@ sap.ui.define([
 				const input = item.getCells()[2].getItems()[1];
 				const visible = input.getVisible();
 				const value = input.getValue();
-				if(input && value.length < 1){
+				if(value.length < 1 && visible){
 					input.setValueState('Error');
 					input.focus();
 					sError = true
@@ -347,45 +423,58 @@ sap.ui.define([
 		},
 
 		checkRequired:function(){
-			let bDocuments = this.checkDocuments();
+			let bDocuments = !this.checkDocuments();
 			let bCNPJ = this.checkModels('cnpjCollection');
 			let bManufacture = this.checkModels('manufacturerCollection');
 			let bClass = this.checkModels('classCollection');
 			return (bDocuments && bCNPJ && bManufacture && bClass)
 		},
-		assembleDocuments:function(){
-			return {
-				file:'',
-				nameFile:'',
-				extension:'',
-				expiredDate:'',
-				createdAt:'',
-				updatedAt:'',
-				documentId:''
-			}
+		assembleExclusiveCards:function(documentId){
+			const aDocuments = this.getView().getModel('documents').getProperty('/items');
+			const aDocumentsToCreate = aDocuments.filter((item)=>(item.newDocument));
+			return aDocumentsToCreate.map((item)=>(
+				{
+					file:item.file,
+					fileName:item.fileName,
+					extension:item.extension,
+					expiredDate:item.expiredDate,
+					createdAt:new Date(),
+					updatedAt:new Date(),
+					documentId:documentId
+				}
+			))
+			 
+			 
 		},
 		assembleEntrySupHana:function(){
 			const documentId = this.getView().getModel().getProperty(`/supplierS4`).DocumentId
 			const cnpj= JSON.stringify(this.getView().getModel().getProperty(`/cnpjCollection`));
 			const manufacturer= JSON.stringify(this.getView().getModel().getProperty(`/manufacturerCollection`));
 			const sClass = JSON.stringify(this.getView().getModel().getProperty(`/classCollection`));
-			return {
+			const oEntryDocuments = this.assembleExclusiveCards(documentId);
+			const oEntrySupplier = {
 				documentId,
 				cnpj,
 				manufacturer,
 				class:sClass,
-				validatedPetro:'solicitacao enviada',
+				validatedPetro:'em andamento',
 				createdAt: new Date(),
 				updatedAt: new Date()
-			}
+			};
+
+			return {oEntrySupplier, oEntryDocuments}
 		},
 		completedHandler: async function () {
 			const validateRequireds = this.checkRequired();
 			if(!validateRequireds)
 				return
-			const oEntry = this.assembleEntrySupHana();
+			const {oEntrySupplier, oEntryDocuments} = this.assembleEntrySupHana();
+		
 			try {
-				const createdForn = await model.createFornHana(oEntry);
+				const createdForn = await model.createFornHana(oEntrySupplier);
+				const aPromises = oEntryDocuments.map((oEntry)=>(model.createDocumentHana(oEntry)));
+				const resolvedPromises = await Promise.all(aPromises);
+				MessageBox.success(this.getView().getModel(`i18n`).getProperty("supplierSendedToPetro"));			
 			}catch(err){
 				sap.ui.core.BusyIndicator.hide();
 				MessageBox.error(this.getView().getModel(`i18n`).getProperty("errorFornecedor"));
@@ -410,7 +499,7 @@ sap.ui.define([
 				lastmodified: new Date(),
 				documentType: "Invoice",
 				newDocument: true,
-				expiredData: "",
+				expiredDate: "",
 				file: b64.replace('data:application/pdf;base64,',''),
 				url: "",
 				status: "",
@@ -441,7 +530,9 @@ sap.ui.define([
 			}catch(err){
 				MessageBox.error(this.getView().getModel(`i18n`).getProperty("errorLoadDocument"));
 			}
-	
-		}
+		},
+		editCnpj:function(){
+			this.getView().getModel().setProperty('/selectedShowCase','linear');
+		},
 	});
 });

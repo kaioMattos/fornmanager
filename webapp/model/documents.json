@@ -14,7 +14,7 @@
 			"documentType": "Specification",
 			"previewable": true,
 			"trustedSource": true,
-			"expiredData":"10/01/2026",
+			"expiredDate":"10/01/2026",
 			"newDocument":false
 		},
 		{
@@ -29,7 +29,7 @@
 			"lastmodified": "2019-01-01T00:00:00",
 			"documentType": "Document",
 			"previewable": true,
-			"expiredData":"20/03/2026",
+			"expiredDate":"20/03/2026",
 			"newDocument":false
 		}
 	]

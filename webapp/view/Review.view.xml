@@ -12,45 +12,200 @@
 	xmlns:upload="sap.m.upload"
 	xmlns="sap.m">
 	
-		
-			<Text text="{i18n>descCnpjStep}"/>	
-			<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
-				<Table id="cnpjTableReview" inset="false"
-					items="{
-						path: '/cnpjCollection',
-						sorter: {
-							path: 'Name'
-						}
-					}">
-					<headerToolbar>
-						<OverflowToolbar>
-							<ToolbarSpacer />
-							<Button id="clearCompleted" text="Editar" icon="sap-icon://delete" press=".clearCompleted"/>
-						</OverflowToolbar>
-					</headerToolbar>
-					<columns>
-						<Column width="12em">
-							<Text text="{i18n>cnpj}" />
-						</Column>
-						<Column >
-							<Text text="{i18n>corporateName}" />
-						</Column>
-						<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
-							<Text text="" />
-						</Column>
-					</columns>
-					<items>
-						<ColumnListItem vAlign="Middle">
-							<cells>
-								<!-- <ObjectIdentifier title="{cnpj}"/> -->
-								<Text text="{cnpj}" />
-								<Text text="{razãoSocial}" />
-								<Button icon="sap-icon://decline"  
-										type="Reject" visible="true" press="deleteCnpj"/>
-							</cells>
-						</ColumnListItem>
-					</items>
-				</Table>
-			</form:SimpleForm>
-			
+	<Panel width="auto" class="sapUiResponsiveMargin" expandable="true" expanded="true">
+		<headerToolbar>
+			<OverflowToolbar>
+				<Title text="{i18n>cnpjStep}"/>
+				<ToolbarSpacer />
+				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana/validatedPetro} === 'validado' }" />
+			</OverflowToolbar>
+		</headerToolbar>
+		<content>
+			<Text text="Lorem ipsum dolor st amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat" />
+			<Table id="cnpjReview" inset="false" class="sapUiSmallMarginTop"
+				items="{
+					path: '/cnpjCollection',
+					sorter: {
+						path: 'Name'
+					}
+				}">
+				<columns>
+					<Column width="12em">
+						<Text text="{i18n>cnpj}" />
+					</Column>
+					<Column >
+						<Text text="{i18n>corporateName}" />
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem vAlign="Middle">
+						<cells>
+							<Text text="{cnpj}" />
+							<Text text="{razaoSocial}" />
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+	</Panel>
+	<Panel width="auto" class="sapUiResponsiveMargin" expandable="true" expanded="false">
+		<headerToolbar>
+			<OverflowToolbar>
+				<Title text="{i18n>manufacturerStep}"/>
+				<ToolbarSpacer />
+				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana/validatedPetro} === 'validado' }" />
+			</OverflowToolbar>
+		</headerToolbar>
+		<content>
+			<Text text="Lorem ipsum dolor st amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat" />
+			<Table id="manufactureTableReview" inset="false" class="sapUiSmallMarginTop"
+				items="{
+					path: '/manufacturerCollection',
+					parameters : {
+						$count : true
+					},
+					sorter: {
+						path: 'Name'
+					}
+				}">					
+				<columns>
+					<Column >
+						<Text text="" />
+					</Column>						
+				</columns>
+				<items>
+					<ColumnListItem vAlign="Middle">
+						<cells>
+							<!-- <ObjectIdentifier title="{cnpj}"/> -->
+							<Text text="{manufacturer}"/>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+	</Panel>
+	<Panel width="auto" class="sapUiResponsiveMargin" expandable="true" expanded="false">
+		<headerToolbar>
+			<OverflowToolbar>
+				<Title text="{i18n>classStep}"/>
+				<ToolbarSpacer />
+				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana/validatedPetro} === 'validado' }" />
+			</OverflowToolbar>
+		</headerToolbar>
+		<content>
+			<Text text="Lorem ipsum dolor st amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat" />
+			<Table id="classTableReview" inset="false" class="sapUiSmallMarginTop"
+				items="{
+					path: '/classCollection',
+					sorter: {
+						path: 'Name'
+					}
+				}">					
+				<columns>
+					<Column>
+						<Text text="" />
+					</Column>					
+				</columns>
+				<items>
+					<ColumnListItem vAlign="Middle">
+						<cells>
+							<Text text="{class}"/>								
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+	</Panel>
+	<Panel width="auto" class="sapUiResponsiveMargin" expandable="true" expanded="false">
+		<headerToolbar>
+			<OverflowToolbar>
+				<Title text="{i18n>exclusivityLetterStep}"/>
+				<ToolbarSpacer />
+				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana/validatedPetro} === 'validado' }" />
+			</OverflowToolbar>
+		</headerToolbar>
+		<content>
+			<Text text="Lorem ipsum dolor st amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat" />
+			<Table
+			id="table-uploadSetReview"
+			class="sapUiSmallMarginTop"
+			sticky="ColumnHeaders,HeaderToolbar"
+			width="auto"
+			fixedLayout="false"
+			inset="true"
+			autoPopinMode="true"
+			hiddenInPopin="None"
+			items="{path: 'documents>/items', templateShareable: false}"
+			selectionChange="onSelectionChange">
+							
+				<columns>
+					<Column id="fileName" importance="High">
+						<header>
+							<Label text="{i18n>fileName}" />
+						</header>
+					</Column>
+					
+					
+					<Column id="lastModified">
+						<header>
+							<Label text="{i18n>lastModified}" />
+						</header>
+					</Column>
+					<Column id="expiredDate">
+						<header>
+							<Label text="{i18n>expiredDate}" />
+						</header>
+					</Column>
+					<Column id="actionButton" importance="High" />
+				</columns>
+				<items>
+					<ColumnListItem
+						press="onItemPress"
+						highlight="{= ${documents>uploadState} === 'Complete' ? 'Indication05' : null }"
+					>                
+						<cells>
+							<HBox>
+								<Image
+									src="{documents>imageUrl}"
+									class="sapMUSTItemImage sapMUSTItemIcon"
+									visible="{= ${documents>imageUrl} !== undefined}"
+								/>
+								<core:Icon
+									src="{parts: ['documents>mediaType', 'documents>fileName'], formatter: '.getIconSrc' }"
+									color="white"
+									visible="{= ${documents>imageUrl} === undefined || ${documents>imageUrl} === '' }"
+									class="sapMUSTItemImage sapMUSTItemIcon"
+								/>
+								<VBox
+									class="sapUiTinyMargin sapUiSmallMarginBegin"
+								>
+									<Link
+										text="{documents>fileName}"
+										press="openPreview"
+										class="sapUiTinyMarginBottom"
+									/>
+									<Text text="{documents>documentType}" />
+								</VBox>
+							</HBox>                                              
+							<VBox>
+								<Text
+									class="sapUiTinyMarginTop"
+									text="{path: 'documents>lastmodified', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd/MM/y HH:mm'}}"
+								/>
+							</VBox>
+							<VBox>
+								<Text text="{documents>expiredDate}" visible="{= ${documents>newDocument} === false}"/>
+								<DatePicker 
+									required="true"
+									visible="{= ${documents>newDocument} === true}" value="{
+									path: 'documents>expiredDate',
+									type: 'sap.ui.model.type.Date',
+									formatOptions: {pattern: 'dd/MM/y'}}" />
+							</VBox>
+						</cells>
+					</ColumnListItem>
+        		</items>				
+			</Table>
+		</content>
+	</Panel>		
 </mvc:View>

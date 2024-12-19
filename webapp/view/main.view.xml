@@ -10,38 +10,20 @@
 				id="wizardContentPage"
 				showHeader="true">
 					<content>
+						
 						<mvc:XMLView
 							id="wizardViewLinear"
 							async="true"
 							visible="{= ${/selectedShowCase} === 'linear' }"
 							viewName="gfex.petrobras.fornmanager.view.Linear" />
-					</content>
-					<footer>
-							<Bar>
-							<contentRight>
-								<Button icon="sap-icon://travel-request" text="Fale conosco" press="handleWizardSubmit"/>
-							</contentRight>
-						</Bar>
-					</footer>
-				</Page>
-				<Page
-				id="reviewContentPage"
-				showHeader="true">
-					<content>
-						<mvc:XMLView
-							id="reviewViewLinear"
+							<mvc:XMLView
+							id="wizardViewReview"
 							async="true"
 							visible="{= ${/selectedShowCase} === 'review' }"
 							viewName="gfex.petrobras.fornmanager.view.Review" />
-					</content>
-					<footer>
-							<Bar>
-							<contentRight>
-								<Button icon="sap-icon://travel-request" text="Fale conosco" press="handleWizardSubmit"/>
-							</contentRight>
-						</Bar>
-					</footer>
-				</Page>
+						</content>
+					</Page>
+				
 			</pages>
 		</NavContainer>
 </mvc:View>

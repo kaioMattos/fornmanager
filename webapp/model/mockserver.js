@@ -31,7 +31,7 @@ sap.ui.define([
 							"lastmodified": "10/03/21, 10:03:00 PM",
 							"documentType": oResponse && oResponse.documentType ? oResponse.documentType : "Invoice",
 							"newDocument":true,
-							"expiredData":"",
+							"expiredDate":"",
 						}
 					);
 					break;

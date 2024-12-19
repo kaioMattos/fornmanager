@@ -11,6 +11,7 @@
 	xmlns:t="sap.ui.table"
 	xmlns:upload="sap.m.upload"
 	xmlns="sap.m">
+	
 	<Wizard
 		id="FornGfexWizard"
 		finishButtonText="Finalizar"
@@ -129,7 +130,7 @@
 					</headerToolbar>
 					<columns>
 						<Column >
-							<Text text="{i18n>manufacturerStep}" />
+							<Text text="" />
 						</Column>
 						<Column  demandPopin="true" hAlign="End">
 							<Text text="" />
@@ -148,7 +149,7 @@
 				</Table>
 			</form:SimpleForm>
 		</WizardStep>
-		<WizardStep id="ClassStep"
+		<WizardStep id="classStep"
 					title="{i18n>classStep}"
 					activate="onActivate">
 			<Text text="Para os Fabricantes"/>
@@ -178,7 +179,7 @@
 					</headerToolbar>
 					<columns>
 						<Column >
-							<Text text="{i18n>classStep}" />
+							<Text text="" />
 						</Column>
 						<Column  demandPopin="true" hAlign="End">
 							<Text text="" />
@@ -265,9 +266,9 @@
 							<Label text="{i18n>lastModified}" />
 						</header>
 					</Column>
-					<Column id="expiredData">
+					<Column id="expiredDate">
 						<header>
-							<Label text="{i18n>expiredData}" />
+							<Label text="{i18n>expiredDate}" />
 						</header>
 					</Column>
 					<Column id="actionButton" importance="High" />
@@ -312,11 +313,11 @@
                             />
                         </VBox>
 						<VBox>
-							<Text text="{documents>expiredData}" visible="{= ${documents>newDocument} === false}"/>
+							<Text text="{documents>expiredDate}" visible="{= ${documents>newDocument} === false}"/>
 							<DatePicker 
 								required="true"
 								visible="{= ${documents>newDocument} === true}" value="{
-								path: 'documents>expiredData',
+								path: 'documents>expiredDate',
 								type: 'sap.ui.model.type.Date',
 								formatOptions: {pattern: 'dd/MM/y'}}" />
 						</VBox>
@@ -333,4 +334,5 @@
 			</form:SimpleForm>
 		</WizardStep>
 	</Wizard>
+	
 </mvc:View>

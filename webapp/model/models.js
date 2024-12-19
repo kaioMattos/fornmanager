@@ -46,7 +46,23 @@ sap.ui.define([
 				return oData;
 			});
 		},
-
+		createDocumentHana: function(data) {
+			return connector.create("/ExclusiveCard", data).then(function(oData, oResponse) {
+				return oData;
+			});
+		},
+		getManufacture:function(options){
+			return connector.readDataSource("/ManufacturerMaterial", options, '_oDataModel').then(function(result) {
+				var oData = result.oData.results;
+				return oData;
+			});
+		},
+		getClass:function(options){
+			return connector.readDataSource("/MaterialClass", options, '_oDataModel').then(function(result) {
+				var oData = result.oData.results;
+				return oData;
+			});
+		},
 		getHistoric: function(options) {
 			return connector.readDataSource("/DetalheDocumentosSet", options).then(function(result) {
 				var oData = result.oData.results;

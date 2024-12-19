@@ -12,11 +12,11 @@ sap.ui.define([
        
         return Controller.extend("gfex.petrobras.fornmanager.controller.main", {
             onInit: function () {
+                this.selectedShowCase = '';
                 this.linearWizard = this.byId("wizardViewLinear");
                 this.branchingWizard = this.byId("wizardViewBranching");
                 this.model = new JSONModel({
                     selectedBackgroundDesign: "Standard",
-                    selectedShowCase: "linear",
                     linearWizardSelectedStep: "BasicDataStep"
                 });
                 this.getView().setModel(this.model);
@@ -45,23 +45,53 @@ sap.ui.define([
                     value1: item.value
                 })))
             },
-            loadModels:function(s4Model){
-                this.model = new JSONModel({
+            assembleModels:function(hanaModel){
+                 const oModels = {
+                    cnpjCollection:[],
+                    manufacturerCollection:[],
+                    classCollection:[]
+                 };
+                 if(hanaModel.length > 0){
+                    oModels.cnpjCollection = JSON.parse(hanaModel[0].cnpj);
+                    oModels.manufacturerCollection = JSON.parse(hanaModel[0].manufacturer);
+                    oModels.classCollection = JSON.parse(hanaModel[0].class);
+                 }
+                 return oModels
+                
+            },
+            loadModels:function(s4Model,hanaModel){
+                const {
+                    cnpjCollection, 
+                    manufacturerCollection,
+                    classCollection
+                } = this.assembleModels(hanaModel);
+                const oModel = new JSONModel({
+                    supplierHana:hanaModel,
                     supplierS4:s4Model,
-                    cnpjCollection:[{
-                        cnpj:"43.904.982/0001-59",status:true,razaoSocial:"BOMBAS GAS DISTRIBUIDORA LTDA"
-                    }],
-                    manufacturerCollection:[{
-                        manufacturer:"Logística Aérea: CHC DO BRASIL TÁXI AEREO S.A.",status:true
-                    }],
-                    classCollection:[{
-                        class:"Classes Bombas",status:true
-                    }],
+                    cnpjCollection,
+                    manufacturerCollection,
+                    classCollection,
                     selectedBackgroundDesign: "Standard",
-                    selectedShowCase: "linear",
-                    linearWizardSelectedStep: "BasicDataStep"
+                    selectedShowCase:this.selectedShowCase,
+                    linearWizardSelectedStep: "BasicDataStep",
+                    visibleLinear:false
                 });
-                this.getView().setModel(this.model);
+                this.getView().setModel(oModel);
+            },
+            openInitialModal:function(oSupplier){
+                switch(oSupplier){
+                    case 'em andamento':
+                        this.onOpenPopoverDialog('PetroValidation');
+                        this.selectedShowCase = 'review';
+
+                        break
+                    case 'concluido':
+                        break
+                    default: 
+                        this.onOpenPopoverDialog('Welcome');
+                        this.selectedShowCase = 'linear';
+                }
+                this.getView().getModel().updateBindings();
             },
             loadApp: async function(){
                 let aFilters = [{
@@ -76,10 +106,10 @@ sap.ui.define([
                     this.getView().setBusy(true);
                     const fornecedorHana = await model.getFornecedorHana({filters: aFiltersHana});
                     const fornecedorS4 = await model.getFornecedores({filters: aFiltersS4});
-                    this.loadModels(fornecedorS4[0]);
-                    if (!fornecedorHana.length)
-                        this.onOpenPopoverDialog('Welcome')
+                    const supplier = !fornecedorHana.length?'':fornecedorHana[0].validatedPetro
+                    this.openInitialModal(supplier);
                     
+                    this.loadModels(fornecedorS4[0],fornecedorHana);
                 }catch(oError){
                     sap.ui.core.BusyIndicator.hide();
                     MessageBox.error(this.getView().getModel(`i18n`).getProperty("errorFornecedor"));

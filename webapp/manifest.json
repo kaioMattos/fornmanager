@@ -120,6 +120,7 @@
 					"view/App.view.xml",
 					"view/main.view.xml",
 					"view/Linear.view.xml",
+          "view/Review.view.xml",
 					"controller/App.controller.js",
 					"controller/main.controller.js",
 					"controller/Linear.controller.js",
