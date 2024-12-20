@@ -28,12 +28,15 @@ sap.ui.define([
 		onAfterRendering:function(){
 			
 			this._oNavContainer = this.byId("wizardNavContainer");
+			this._wizard = this.byId("FornGfexWizard");
+			
 			this.onFilter(`active`, `cnpjCollection`,`cnpjTable`);
 			this.oMockServer.oModel = this.byId("table-uploadSet").getModel("documents");
 		},
 		onInit: function () {
 			this.documentTypes = this.getFileCategories();
 			this.oMockServer = new MockServer();
+			
 		},
 		onBeforeUploadStarts: function() {
 			// This code block is only for demonstration purpose to simulate XHR requests, hence starting the mockserver.
@@ -70,7 +73,7 @@ sap.ui.define([
 			this.removeItem(oContext);
 		},
 		removeItem: function(oContext) {
-			const oModel = this.getView().getModel("documents");
+			const oModel = this.getView().getModel();
 			const oTable = this.byId("table-uploadSet");
 			const sMessage= this.getView().getModel(`i18n`).getProperty(`messageDeleteDocument`);
 			MessageBox.warning(
@@ -88,7 +91,7 @@ sap.ui.define([
 						var spath = oContext.getPath();
 						if (spath.split("/")[2]) {
 							var index = spath.split("/")[2];
-							var data = oModel.getProperty("/items");
+							var data = oModel.getProperty("/documentCollection");
 							data.splice(index, 1);
 							oModel.refresh(true);
 							if (oTable && oTable.removeSelections) {
@@ -111,7 +114,7 @@ sap.ui.define([
 			return UploadSetwithTable.getFileSizeWithUnits(iFileSize);
 		},
 		openPreview: function(oEvent) {
-			let oDocument = oEvent.getSource().getBindingContext('documents').getObject();
+			let oDocument = oEvent.getSource().getBindingContext().getObject();
 			const type = oDocument.mediaType;
 
 			if(type==="text/plain" || type==="application/pdf" || type==="application/msword"){
@@ -132,8 +135,11 @@ sap.ui.define([
 			let bIsValid = !!this.getView().getModel().getProperty(`/cnpjCollection`).find((cnpj)=>(cnpj.status));
 
 
-			//this.assembleManufacturer();
+			
 			oCnpjStep.setValidated(bIsValid);
+			if(bIsValid){
+				this.assembleManufacturer();
+			}
 			manufacturerStep.setBlocked(!bIsValid);
 			oClassStep.setBlocked(!bIsValid);
 			oExclusiLetterStep.setBlocked(!bIsValid);
@@ -147,7 +153,10 @@ sap.ui.define([
 			let bIsValidClass = !!this.getView().getModel().getProperty(`/classCollection`).find((item)=>(item.status));
 
 
-			//this.assembleManufacturerClass();
+			
+			if(bIsValid){
+				this.assembleManufacturerClass();
+			}
 			manufacturerStep.setValidated(bIsValid);
 			oClassStep.setBlocked(!bIsValid);
 			oExclusiLetterStep.setBlocked(!bIsValid);
@@ -185,9 +194,9 @@ sap.ui.define([
 		onActivate: async function (oEvent) {
 			var sCurrentStepId = oEvent.getParameter("id");
 			sCurrentStepId = sCurrentStepId.split('-').pop();
-
-			this._syncSelect(sCurrentStepId);
-
+			if(this.editMode){
+				this._syncSelect(this.sCurrentStepId);
+			}
 			if (sCurrentStepId === 'CnpjStep') {
 				this.validateCnpjStep();
 			} else if(sCurrentStepId === `manufacturerStep`){
@@ -244,15 +253,15 @@ sap.ui.define([
 			bind.filter(tabFilters)
 		},
 		assembleManufacturerClass:function(){
-			const panelManufac = this.byId(`StepClassManufac`);
+			//const panelManufac = this.byId(`StepClassManufac`);
 			const oModel = this.getView().getModel().getProperty(`/manufacturerCollection`);
 			const collectionClass= this.getView().getModel().getProperty(`/classCollection`);
 			const manufactures = oModel.filter((cnpj)=>cnpj.status);
-			panelManufac.removeAllItems();
-			manufactures.forEach(function(manufacturer) {
-				const oText = new sap.m.Text( {text:manufacturer.manufacturer});
-				panelManufac.addItem(oText);
-			})
+			//panelManufac.removeAllItems();
+			//manufactures.forEach(function(manufacturer) {
+			//	const oText = new sap.m.Text( {text:manufacturer.manufacturer});
+			//	panelManufac.addItem(oText);
+			//})
 			const sClass= this.getView().getModel(`i18n`).getProperty(`classStep`);
 			this.setCountingTable(`titleClass`, collectionClass.filter((item)=>(item.status)).length,sClass);
 		},
@@ -302,7 +311,7 @@ sap.ui.define([
 		},
 		assembleManufacturer: async function(){
 
-			const cnpjCollection = this.getView().getModel().getProperty(`/cnpjCollection`);
+			const cnpjCollection = this.getView().getModel().getProperty(`/cnpjCollection`).filter((cnpj)=>(cnpj.status));
 			const aFilter = cnpjCollection.map((item)=>(new Filter("DocumentId", FilterOperator.EQ, item.cnpj)));			
 			
 			const oDataManufacture = await this.getDataManufacturer(aFilter);
@@ -430,16 +439,17 @@ sap.ui.define([
 			return (bDocuments && bCNPJ && bManufacture && bClass)
 		},
 		assembleExclusiveCards:function(documentId){
-			const aDocuments = this.getView().getModel('documents').getProperty('/items');
+			const aDocuments = this.getView().getModel().getProperty('/documentCollection');
 			const aDocumentsToCreate = aDocuments.filter((item)=>(item.newDocument));
 			return aDocumentsToCreate.map((item)=>(
 				{
 					file:item.file,
 					fileName:item.fileName,
 					extension:item.extension,
+					mediaType: item.mediaType,
 					expiredDate:item.expiredDate,
 					createdAt:new Date(),
-					updatedAt:new Date(),
+					updatedAt:item.updatedAt,
 					documentId:documentId
 				}
 			))
@@ -475,6 +485,7 @@ sap.ui.define([
 				const aPromises = oEntryDocuments.map((oEntry)=>(model.createDocumentHana(oEntry)));
 				const resolvedPromises = await Promise.all(aPromises);
 				MessageBox.success(this.getView().getModel(`i18n`).getProperty("supplierSendedToPetro"));			
+				this.getView().getModel().setProperty('/selectedShowCase','review');
 			}catch(err){
 				sap.ui.core.BusyIndicator.hide();
 				MessageBox.error(this.getView().getModel(`i18n`).getProperty("errorFornecedor"));
@@ -496,7 +507,7 @@ sap.ui.define([
 				uploadState: "Complete",
 				revision: "00",
 				fileSize: oFile.size,
-				lastmodified: new Date(),
+				updatedAt: new Date(),
 				documentType: "Invoice",
 				newDocument: true,
 				expiredDate: "",
@@ -517,12 +528,12 @@ sap.ui.define([
 			});
 		  },
 		onChange: async function(oEvent){
-			const oModel = this.getView().getModel('documents');
+			const oModel = this.getView().getModel();
 			try{
 				var oFile = oEvent.getParameter("files")[0];
 				const sFileBase64 = await this.readFile(oFile);
 				const oDocument =this.assembleItemDocument(oFile,sFileBase64);  
-				oModel.getProperty("/items").unshift(oDocument);
+				oModel.getProperty("/documentCollection").unshift(oDocument);
 				oModel.refresh(true);
 				setTimeout(function() {
 					MessageToast.show("Documento Adicionado");
@@ -533,6 +544,18 @@ sap.ui.define([
 		},
 		editCnpj:function(){
 			this.getView().getModel().setProperty('/selectedShowCase','linear');
+			this.getView().getModel().setProperty('/editMode',true);
+			//this._syncSelect('CnpjStep')
+			this.sCurrentStepId='CnpjStep';
+		},
+		_handleNavigationToStep: function (iStepNumber) {
+			var fnAfterNavigate = function () {
+				this._wizard.goToStep(this._wizard.getSteps()[iStepNumber]);
+				this._oNavContainer.detachAfterNavigate(fnAfterNavigate);
+			}.bind(this);
+
+			this._oNavContainer.attachAfterNavigate(fnAfterNavigate);
+			this.backToWizardContent();
 		},
 	});
 });

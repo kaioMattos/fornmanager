@@ -3,27 +3,151 @@
 		controllerName="gfex.petrobras.fornmanager.controller.main"
 		xmlns:core="sap.ui.core"
 		xmlns:mvc="sap.ui.core.mvc"
+		xmlns:form="sap.ui.layout.form"
+		xmlns:u="sap.ui.unified"
+		xmlns:f="sap.ui.layout.form"
+		xmlns:l="sap.ui.layout"
+		xmlns:t="sap.ui.table"
+		xmlns:upload="sap.m.upload"
 		xmlns="sap.m">
 		<NavContainer id="wizardNavContainer">
 			<pages>
 				<Page
+				class= "sapUiResponsivePadding--header"
 				id="wizardContentPage"
 				showHeader="true">
 					<content>
-						
-						<mvc:XMLView
-							id="wizardViewLinear"
-							async="true"
-							visible="{= ${/selectedShowCase} === 'linear' }"
-							viewName="gfex.petrobras.fornmanager.view.Linear" />
-							<mvc:XMLView
-							id="wizardViewReview"
-							async="true"
-							visible="{= ${/selectedShowCase} === 'review' }"
-							viewName="gfex.petrobras.fornmanager.view.Review" />
+					<ObjectHeader
+						backgroundDesign="Solid"
+						id="headerBD"
+						titleLevel="H5"
+						binding="{/supplierS4/}"
+						title="{SupplierName}"
+						number="{SupplierId}"
+						numberUnit="{CurrencyCode}">						
+						<statuses>
+							<ObjectStatus id="headPostalCode" text="{PostalCode}" />
+							<ObjectStatus id="headCountry" text="{State}/{Country}" />
+						</statuses>
+						<ObjectAttribute text="{Street}" id="headStreet" />
+						<ObjectAttribute text="{District}" id="headDeistrict"/>
+					</ObjectHeader>
+						<Wizard 
+							id="WizardSupGFEX" finishButtonText="Finalizar" height="auto"
+							class="sapUiResponsivePadding--header sapUiResponsivePadding--content"
+							complete="completedHandler" currentStep="CnpjStep">
+							<WizardStep id="CnpjStep" title="{i18n>cnpjStep}" activate="onActivate" 
+								icon="sap-icon://document">
+								<Text text="{i18n>descCnpjStep}" id="descCnpj"/>	
+								<form:SimpleForm labelSpanL="1"  labelSpanM="1"
+								 	labelSpanS="6" class="sapUiTinyMarginTop" id="formInputCnpj"
+									editable="true" layout="ResponsiveGridLayout">
+										<form:content>
+											<!-- <Label text="{i18n>cnpj}" required="true"/> -->
+											<Input valueStateText="" id="cnpj" submit="includeCnpj"
+												placeholder="Insira aqui a chave do fornecedor" value="{/cnpj}"/> 
+											<Button text="Adicionar" type="Transparent" press="includeCnpj"
+											 ariaLabelledBy="editButtonLabel" id="btnAdicionarCnpj">
+												<layoutData>
+													<l:GridData span="XL1 L1 M1 S1" />
+												</layoutData>
+											</Button>
+										</form:content>
+									</form:SimpleForm>
+									<form:SimpleForm editable="true" layout="ResponsiveGridLayout"
+									id="formCnpj">	
+										<Table id="cnpjTable" inset="false"
+											items="{
+												path: '/cnpjCollection',
+												sorter: {
+													path: 'Name'
+												}
+											}">
+											<headerToolbar>
+												<OverflowToolbar>
+													<content>
+														<Title text="Items" level="H2" id="titleItemsCnpj"/>														
+													</content>
+												</OverflowToolbar>
+											</headerToolbar>
+											<columns>
+												<Column width="12em" id="columnCnpj">
+													<Text text="{i18n>cnpj}" id="txtColCnpj"/>
+												</Column>
+												<Column id="columnCorporateName">
+													<Text text="{i18n>corporateName}" id="txtColCorporateName"/>
+												</Column>
+												<Column id="columnDeleteCnpj" minScreenWidth="Tablet"
+													demandPopin="true" hAlign="End">
+													<Text text="" id="txtColDeleteCnpj" />
+												</Column>
+											</columns>
+											<items>
+												<ColumnListItem vAlign="Middle" id="lineCnpj">
+													<cells>
+														<!-- <ObjectIdentifier title="{cnpj}"/> -->
+														<Text text="{cnpj}" id="txtCnpj"/>
+														<Text text="{razaoSocial}" id="txtRazaoSocial"/>
+														<Button icon="sap-icon://decline" id="btnDelete" 
+																type="Reject" visible="true" press="deleteCnpj"/>
+													</cells>
+												</ColumnListItem>
+											</items>
+										</Table>
+									</form:SimpleForm>
+								</WizardStep>
+								<WizardStep id="manufacturerStep" icon="sap-icon://action-settings"
+									title="{i18n>manufacturerStep}"
+									activate="onActivate">
+									<Text text="Para os CNPJs, foram encontrados os seguintes fabricantes:" 
+										id="textManufacturer"/>
+									<form:SimpleForm editable="true" layout="ResponsiveGridLayout" 
+									id="formManufacture">	
+										<Table id="manufactureTable" inset="false" 
+											items="{
+												path: '/manufacturerCollection',
+												parameters : {
+													$count : true
+												},
+												sorter: {
+													path: 'Name'
+												}
+											}">
+											<headerToolbar>
+												<OverflowToolbar>
+													<Title text="Items" id="titleManufacturer" level="H2"/>
+													<ToolbarSpacer />
+													<SegmentedButton selectedKey="active" id="swichStatusManufacture" selectionChange=".onFilterManufacture" class="sapMSegmentedButtonNoAutoWidth">
+														<items>
+															<SegmentedButtonItem id="swichActive" text="{i18n>lblAtivos}" key="active"/>	
+															<SegmentedButtonItem id="swichExcluded" text="{i18n>lblExcluded}" key="excluded"/>
+														</items>
+													</SegmentedButton>
+													<!-- <Button id="clearCompleted" enabled="{/itemsRemovable}" icon="sap-icon://delete" press=".clearCompleted"/> -->
+												</OverflowToolbar>
+											</headerToolbar>
+											<columns>
+												<Column id="colIdManufacture">
+													<Text text="{i18n>id}"  id="txtColIdManufacture" />
+												</Column>
+												<Column  id="colNameManufacture">
+													<Text text="{i18n>name}" id="txtColNameManufacture"/>
+												</Column>
+											</columns>
+											<items>
+												<ColumnListItem vAlign="Middle" id="lineManufacture">
+													<cells>
+														<Text text="{manufacturer}" id="txtIdManufacture"/>
+														<Text text="" id="txtNameManufacture"/>
+													</cells>
+												</ColumnListItem>
+											</items>
+										</Table>
+								</form:SimpleForm>
+								</WizardStep>
+							</Wizard>
 						</content>
-					</Page>
-				
+					</Page>				
 			</pages>
 		</NavContainer>
 </mvc:View>

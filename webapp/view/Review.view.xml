@@ -17,7 +17,7 @@
 			<OverflowToolbar>
 				<Title text="{i18n>cnpjStep}"/>
 				<ToolbarSpacer />
-				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana/validatedPetro} === 'validado' }" />
+				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana>validatedPetro} === 'concluido' }" />
 			</OverflowToolbar>
 		</headerToolbar>
 		<content>
@@ -53,7 +53,7 @@
 			<OverflowToolbar>
 				<Title text="{i18n>manufacturerStep}"/>
 				<ToolbarSpacer />
-				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana/validatedPetro} === 'validado' }" />
+				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana>/validatedPetro} === 'concluido' }" />
 			</OverflowToolbar>
 		</headerToolbar>
 		<content>
@@ -89,7 +89,7 @@
 			<OverflowToolbar>
 				<Title text="{i18n>classStep}"/>
 				<ToolbarSpacer />
-				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana/validatedPetro} === 'validado' }" />
+				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana>/validatedPetro} === 'concluido' }" />
 			</OverflowToolbar>
 		</headerToolbar>
 		<content>
@@ -121,7 +121,7 @@
 			<OverflowToolbar>
 				<Title text="{i18n>exclusivityLetterStep}"/>
 				<ToolbarSpacer />
-				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana/validatedPetro} === 'validado' }" />
+				<Button icon="sap-icon://edit" press="editCnpj" visible="{= ${/supplierHana>/validatedPetro} === 'concluido' }" />
 			</OverflowToolbar>
 		</headerToolbar>
 		<content>
@@ -135,8 +135,7 @@
 			inset="true"
 			autoPopinMode="true"
 			hiddenInPopin="None"
-			items="{path: 'documents>/items', templateShareable: false}"
-			selectionChange="onSelectionChange">
+			items="{path: '/documentCollection', templateShareable: false}">
 							
 				<columns>
 					<Column id="fileName" importance="High">
@@ -159,48 +158,43 @@
 					<Column id="actionButton" importance="High" />
 				</columns>
 				<items>
-					<ColumnListItem
-						press="onItemPress"
-						highlight="{= ${documents>uploadState} === 'Complete' ? 'Indication05' : null }"
-					>                
+					<ColumnListItem>                
 						<cells>
 							<HBox>
 								<Image
-									src="{documents>imageUrl}"
+									src="{imageUrl}"
 									class="sapMUSTItemImage sapMUSTItemIcon"
-									visible="{= ${documents>imageUrl} !== undefined}"
+									visible="{= ${imageUrl} !== undefined}"
 								/>
 								<core:Icon
-									src="{parts: ['documents>mediaType', 'documents>fileName'], formatter: '.getIconSrc' }"
+									src="{parts: ['mediaType', 'fileName'], formatter: '.getIconSrc' }"
 									color="white"
-									visible="{= ${documents>imageUrl} === undefined || ${documents>imageUrl} === '' }"
+									visible="{= ${imageUrl} === undefined || ${imageUrl} === '' }"
 									class="sapMUSTItemImage sapMUSTItemIcon"
 								/>
 								<VBox
 									class="sapUiTinyMargin sapUiSmallMarginBegin"
 								>
 									<Link
-										text="{documents>fileName}"
+										text="{fileName}"
 										press="openPreview"
 										class="sapUiTinyMarginBottom"
 									/>
-									<Text text="{documents>documentType}" />
+									<Text text="{documentType}" />
 								</VBox>
 							</HBox>                                              
 							<VBox>
 								<Text
 									class="sapUiTinyMarginTop"
-									text="{path: 'documents>lastmodified', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd/MM/y HH:mm'}}"
+									text="{path: 'updatedAt', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd/MM/y HH:mm'}}"
 								/>
 							</VBox>
 							<VBox>
-								<Text text="{documents>expiredDate}" visible="{= ${documents>newDocument} === false}"/>
-								<DatePicker 
-									required="true"
-									visible="{= ${documents>newDocument} === true}" value="{
-									path: 'documents>expiredDate',
+								<Text text="{
+									path: 'expiredDate',
 									type: 'sap.ui.model.type.Date',
 									formatOptions: {pattern: 'dd/MM/y'}}" />
+								
 							</VBox>
 						</cells>
 					</ColumnListItem>

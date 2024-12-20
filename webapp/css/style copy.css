@@ -1,0 +1,84 @@
+/* Enter your custom styles here */
+
+.sapUiForm .sapUiFormElementLbl>.sapMLabel {
+
+    text-align: left !important;
+    
+    width : auto;
+    
+    
+    }
+
+    .sapUiRespGridMedia-Std-Tablet.sapUiRespGridHSpace0>.sapUiRespGridSpanM2 {
+        width: 10.66666667% !important;
+    }
+
+    .sapMOH{
+        padding: 1px !important;
+    }
+
+    
+    .sapMWizardProgressNavStepCircle{
+        border-color: #008542;
+    }
+    .sapMWizardProgressNavStep[data-sap-ui-wpn-step-current="true"]:hover .sapMWizardProgressNavStepCircle {
+        background-color: #008542;
+        color: #fff;
+      }
+      .sapMWizardProgressNavStep[data-sap-ui-wpn-step-current="true"] .sapMWizardProgressNavStepCircle {
+        background: #008542;
+          background-color: rgb(0, 133, 66);
+        color: #fff;
+      }
+      .sapMWizardProgressNavStep:hover .sapMWizardProgressNavStepCircle {
+        color: #008542;
+      }
+      .sapMWizardProgressNavStepCircle {
+        color: #008542;
+      }
+      .sapMWizardProgressNavStep[data-sap-ui-wpn-step-current="true"] .sapMWizardProgressNavStepTitle {
+        color: #008542;
+      }
+      .sapMWizardProgressNavStep:hover .sapMWizardProgressNavStepTitle {
+        color: #008542;
+      }
+      .sapMWizardProgressNavStepTitle {
+        color: #008542;
+      }
+      .sapMWizardProgressNavStep::after {
+  border-bottom-color: #008542;
+}
+.sapMWizardProgressNavStep[data-sap-ui-wpn-step-current="true"] .sapMWizardProgressNavStepCircle::after {
+    height: .188rem;
+    background: #008542;
+    content: "";
+    display: block;
+    position: relative;
+    width: 100%;
+    border-top-left-radius: 0.125rem;
+    border-top-right-radius: 0.125rem;
+    bottom: -0.75rem;
+  }
+  
+  .sapMInputBaseInner:not(.sapMInputBaseReadonlyWrapper):not(.sapMInputBaseContentWrapperState):focus{
+    border-color: #008542 ;
+  }
+  .sapMBtn > .sapMBtnHoverable.sapMBtnEmphasized:not(.sapMBtnActive):not(.sapMToggleBtnPressed) {
+    background-color: #008542;
+    border-color: #008542;
+    color: #fff;
+  }
+  .sapMBtn:hover > .sapMBtnHoverable.sapMBtnEmphasized:not(.sapMBtnActive):not(.sapMToggleBtnPressed) {
+    background-color: #007D3E;
+    border-color: #007D3E;
+    color: #fff;
+  }
+  html.sap-desktop .sapMBtn:focus > .sapMBtnEmphasized.sapMBtnActive.sapMFocusable{
+    border-color: #007D3E;
+    color:#007D3E ;
+  }
+
+  :not(.sapMBtnDisabled) > span.sapMBtnInner.sapMBtnEmphasized.sapMBtnActive{
+    border-color: #007D3E  !important;
+    color: #007D3E  !important;
+  }
