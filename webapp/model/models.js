@@ -40,7 +40,11 @@ sap.ui.define([
 				return oData;
 			});
 		},
-
+		updateSupplier:function(id, data){
+			return connector.update(`/Suppliers(${id})`, data).then(function(oData, oResponse) {
+				return oData;
+			});
+		},
 		createFornHana: function(data) {
 			return connector.create("/Suppliers", data).then(function(oData, oResponse) {
 				return oData;
@@ -50,6 +54,9 @@ sap.ui.define([
 			return connector.create("/ExclusiveCard", data).then(function(oData, oResponse) {
 				return oData;
 			});
+		},
+		deleteDocumentHana: function(sNumOrder) {
+			return connector.remove(`/ExclusiveCard(${sNumOrder})`);
 		},
 		getManufacture:function(options){
 			return connector.readDataSource("/ManufacturerMaterial", options, '_oDataModel').then(function(result) {

@@ -22,7 +22,7 @@
 		</headerToolbar>
 		<content>
 			<Text text="Lorem ipsum dolor st amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat" />
-			<Table id="cnpjReview" inset="false" class="sapUiSmallMarginTop"
+			<Table id="cnpjReview_" inset="false" class="sapUiSmallMarginTop"
 				items="{
 					path: '/cnpjCollection',
 					sorter: {
@@ -58,7 +58,7 @@
 		</headerToolbar>
 		<content>
 			<Text text="Lorem ipsum dolor st amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat" />
-			<Table id="manufactureTableReview" inset="false" class="sapUiSmallMarginTop"
+			<Table id="manufactureTableReview_" inset="false" class="sapUiSmallMarginTop"
 				items="{
 					path: '/manufacturerCollection',
 					parameters : {
@@ -94,7 +94,7 @@
 		</headerToolbar>
 		<content>
 			<Text text="Lorem ipsum dolor st amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat" />
-			<Table id="classTableReview" inset="false" class="sapUiSmallMarginTop"
+			<Table id="classTableReview_" inset="false" class="sapUiSmallMarginTop"
 				items="{
 					path: '/classCollection',
 					sorter: {
@@ -127,7 +127,7 @@
 		<content>
 			<Text text="Lorem ipsum dolor st amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat" />
 			<Table
-			id="table-uploadSetReview"
+			id="table-uploadSetReview_"
 			class="sapUiSmallMarginTop"
 			sticky="ColumnHeaders,HeaderToolbar"
 			width="auto"
@@ -138,24 +138,24 @@
 			items="{path: '/documentCollection', templateShareable: false}">
 							
 				<columns>
-					<Column id="fileName" importance="High">
+					<Column id="fileName_" importance="High">
 						<header>
 							<Label text="{i18n>fileName}" />
 						</header>
 					</Column>
 					
 					
-					<Column id="lastModified">
+					<Column id="lastModified_">
 						<header>
 							<Label text="{i18n>lastModified}" />
 						</header>
 					</Column>
-					<Column id="expiredDate">
+					<Column id="expiredDate_">
 						<header>
 							<Label text="{i18n>expiredDate}" />
 						</header>
 					</Column>
-					<Column id="actionButton" importance="High" />
+					<Column id="actionButton_" importance="High" />
 				</columns>
 				<items>
 					<ColumnListItem>                

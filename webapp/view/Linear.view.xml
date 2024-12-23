@@ -20,7 +20,7 @@
 		class="sapUiResponsivePadding--header sapUiResponsivePadding--content"
 		complete="completedHandler"
 		currentStep="BasicDataStep">
-		<WizardStep id="BasicDataStep_" title="{i18n>basicDataStep}" activate="onActivate"
+		<WizardStep id="BasicDataStep_" title="{i18n>basicDataStep}" activate=""
 			icon="sap-icon://SAP-icons-TNT/data-store">
 			<ObjectHeader
 				binding="{/supplierS4/}"
@@ -37,7 +37,7 @@
 				<ObjectAttribute text="{District}" />
 			</ObjectHeader>
 		</WizardStep>
-		<WizardStep id="CnpjStep_" title="{i18n>cnpjStep}" activate="onActivate" 
+		<WizardStep id="CnpjStep_" title="{i18n>cnpjStep}" activate="" 
 			icon="sap-icon://document">
 			<Text text="{i18n>descCnpjStep}"/>	
 			<form:SimpleForm labelSpanL="1"  labelSpanM="1" labelSpanS="6" class="sapUiLargeMarginTop"
@@ -95,7 +95,7 @@
 		</WizardStep>
 		<WizardStep id="manufacturerStep_" icon="sap-icon://action-settings"
 					title="{i18n>manufacturerStep}"
-					activate="onActivate">
+					activate="">
 			<Text text="Para os CNPJs, foram encontrados os seguintes fabricantes:"/>
 			<Panel>
 				<FlexBox id="cnpjsStepManufacturer" direction="Column" alignItems="Start" class="sapUiSmallMarginBottom sapUiTinyMarginTop"/>
@@ -145,15 +145,15 @@
 				</Table>
 			</form:SimpleForm>
 		</WizardStep>
-		<WizardStep id="classStep" icon="sap-icon://switch-classes"
+		<WizardStep id="classStep_" icon="sap-icon://switch-classes"
 					title="{i18n>classStep}"
-					activate="onActivate">
+					activate="">
 			<Text text="Para os Fabricantes"/>
 			<Panel>
-				<FlexBox id="StepClassManufac" direction="Column" alignItems="Start" class="sapUiSmallMarginBottom sapUiTinyMarginTop"/>
+				<FlexBox id="StepClassManufac_" direction="Column" alignItems="Start" class="sapUiSmallMarginBottom sapUiTinyMarginTop"/>
 			</Panel>
 			<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
-				<Table id="classTable" inset="false" 
+				<Table id="classTable_" inset="false" 
 					items="{
 						path: '/classCollection',
 						sorter: {
@@ -162,9 +162,9 @@
 					}">
 					<headerToolbar>
 						<OverflowToolbar>
-							<Title text="" id="titleClass" level="H2"/>
+							<Title text="" id="titleClass_" level="H2"/>
 							<ToolbarSpacer />
-							<SegmentedButton selectedKey="active" id="swichStatusClass" selectionChange=".onFilterClass" class="sapMSegmentedButtonNoAutoWidth">
+							<SegmentedButton selectedKey="active" id="swichStatusClass_" selectionChange=".onFilterClass" class="sapMSegmentedButtonNoAutoWidth">
 								<items>
 									<SegmentedButtonItem text="{i18n>lblAtivos}" key="active"/>	
 									<SegmentedButtonItem text="{i18n>lblExcluded}" key="excluded"/>
@@ -194,13 +194,13 @@
 				</Table>
 			</form:SimpleForm>
 		</WizardStep>
-		<WizardStep id="exclusivityLetterStep" icon="sap-icon://attachment"
+		<WizardStep id="exclusivityLetterStep_" icon="sap-icon://attachment"
 					title="{i18n>exclusivityLetterStep}"
-					activate="onActivate">
+					activate="">
 					<Text text="Nesta etapa anexe a Carta de Exclusividade"/>
 				<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
 				<Table
-				id="table-uploadSet"
+				id="table-uploadSet_"
 				sticky="ColumnHeaders,HeaderToolbar"
 				width="auto"
 				fixedLayout="false"
@@ -217,7 +217,7 @@
 						/>
 						<ToolbarSpacer />
                     <ToolbarSeparator />
-					    <u:FileUploader buttonOnly="true" id="fileUpload" change="onChange" fileType="pdf" mimeType="pdf" buttonText="Upload"  />
+					    <u:FileUploader buttonOnly="true" id="fileUpload_" change="onChange" fileType="pdf" mimeType="pdf" buttonText="Upload"  />
 						<!--<Button text="Upload" type="Default" press="pressFileUploader" ariaLabelledBy="editButtonLabel"/>
 						
                     <upload:ActionsPlaceholder id="uploadButton" placeholderFor="UploadButtonPlaceholder" />
@@ -232,14 +232,14 @@
 						beforeInitiatingItemUpload="onBeforeInitiatingItemUpload"
 						beforeUploadStarts="onBeforeUploadStarts"
 						itemRenamed="onDocumentRenamedSuccess"
-						uploadCompleted="onUploadCompleted"
-						onActivated="onPluginActivated"
+						uploadCompleted="onChange"
+						d="onPluginActivated"
 						cloudFilePickerEnabled="true"
 						actions="uploadButton"
 						>
 							<rowConfiguration>
 								<upload.UploadItemConfiguration
-								fileNamePath="fileName"
+								fileNamePath="_"
 								mediaTypePath="mediaType"
 								urlPath="url"
 								previewablePath="previewable"
@@ -250,24 +250,24 @@
 						</plugins.UploadSetwithTable>
 				</dependents>
 				<columns>
-					<Column id="fileName" importance="High">
+					<Column id="fileName_" importance="High">
 						<header>
 							<Label text="{i18n>fileName}" />
 						</header>
 					</Column>
 					
 					
-					<Column id="lastModified">
+					<Column id="lastModified_">
 						<header>
 							<Label text="{i18n>lastModified}" />
 						</header>
 					</Column>
-					<Column id="expiredDate">
+					<Column id="expiredDate_">
 						<header>
 							<Label text="{i18n>expiredDate}" />
 						</header>
 					</Column>
-					<Column id="actionButton" importance="High" />
+					<Column id="actionButton_" importance="High" />
             </columns>
 			<items>
                 <ColumnListItem

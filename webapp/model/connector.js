@@ -70,7 +70,7 @@ sap.ui.define([
 
         update: function (sPath, data) {
             return new Promise((resolve, reject) => {
-                this._oDataModel.update(sPath, data, {
+                this._oDataModelHana.update(sPath, data, {
                     async: true,
                     success: function (oData, oResponse) {
                         resolve(oData, oResponse);
@@ -119,7 +119,7 @@ sap.ui.define([
 
         remove: function (sPath) {
             return new Promise((resolve, reject) => {
-                this._oDataModel.remove(sPath, {
+                this._oDataModelHana.remove(sPath, {
                     async: true,
                     success: function (oData) {
                         resolve(oData);

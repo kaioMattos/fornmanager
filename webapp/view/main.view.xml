@@ -17,21 +17,21 @@
 				id="wizardContentPage"
 				showHeader="true">
 					<content>
-					<ObjectHeader
-						backgroundDesign="Solid"
-						id="headerBD"
-						titleLevel="H5"
-						binding="{/supplierS4/}"
-						title="{SupplierName}"
-						number="{SupplierId}"
-						numberUnit="{CurrencyCode}">						
-						<statuses>
-							<ObjectStatus id="headPostalCode" text="{PostalCode}" />
-							<ObjectStatus id="headCountry" text="{State}/{Country}" />
-						</statuses>
-						<ObjectAttribute text="{Street}" id="headStreet" />
-						<ObjectAttribute text="{District}" id="headDeistrict"/>
-					</ObjectHeader>
+						<ObjectHeader
+							backgroundDesign="Solid"
+							id="headerBD"
+							titleLevel="H5"
+							binding="{/supplierS4/}"
+							title="{SupplierName}"
+							number="{SupplierId}"
+							numberUnit="{CurrencyCode}">						
+							<statuses>
+								<ObjectStatus id="headPostalCode" text="{PostalCode}" />
+								<ObjectStatus id="headCountry" text="{State}/{Country}" />
+							</statuses>
+							<ObjectAttribute text="{Street}" id="headStreet" />
+							<ObjectAttribute text="{District}" id="headDeistrict"/>
+						</ObjectHeader>
 						<Wizard 
 							id="WizardSupGFEX" finishButtonText="Finalizar" height="auto"
 							class="sapUiResponsivePadding--header sapUiResponsivePadding--content"
@@ -133,22 +133,397 @@
 												<Column  id="colNameManufacture">
 													<Text text="{i18n>name}" id="txtColNameManufacture"/>
 												</Column>
+												<Column  id="colDelManufacture" demandPopin="true" hAlign="End">
+													<Text text="" id="txtColDelManufacture"/>
+												</Column>
 											</columns>
 											<items>
 												<ColumnListItem vAlign="Middle" id="lineManufacture">
 													<cells>
 														<Text text="{manufacturer}" id="txtIdManufacture"/>
 														<Text text="" id="txtNameManufacture"/>
+														<Button icon="{ path: 'status',formatter: '.formatter.iconBtnSwichDecision'}"  															
+															type="{ path: 'status',
+															formatter: '.formatter.typeBtnSwichDecision'}" 
+															visible="true" press="deleteOrBackManufacture" id="btnDelManufacture"/>
 													</cells>
 												</ColumnListItem>
 											</items>
 										</Table>
-								</form:SimpleForm>
+									</form:SimpleForm>
 								</WizardStep>
-							</Wizard>
+								<WizardStep id="classStep" icon="sap-icon://switch-classes"
+									title="{i18n>classStep}" activate="onActivate">
+									<Text id="txtClass" text="Para os Fabricantes, foram encontrados as seguintes classes:"/>									
+									<form:SimpleForm id="formClass" editable="true" layout="ResponsiveGridLayout">	
+										<Table id="classTable" inset="false" 
+											items="{
+												path: '/classCollection',
+												sorter: {
+													path: 'Name'
+												}
+											}">
+											<headerToolbar>
+												<OverflowToolbar>
+													<Title text="Items" id="titleClass" level="H2"/>
+													<ToolbarSpacer />
+													<SegmentedButton selectedKey="active" id="swichStatusClass" selectionChange=".onFilterClass" class="sapMSegmentedButtonNoAutoWidth">
+														<items>
+															<SegmentedButtonItem id="swichActiveClass" text="{i18n>lblAtivos}" key="active"/>	
+															<SegmentedButtonItem id="swichExcludedClass"  text="{i18n>lblExcluded}" key="excluded"/>
+														</items>
+													</SegmentedButton>													
+												</OverflowToolbar>
+											</headerToolbar>
+											<columns>
+												<Column id="colNameClass">
+													<Text id="txtColNameClass" text="{i18n>name}" />
+												</Column>
+												<Column  id="colDelClass" demandPopin="true" hAlign="End">
+													<Text id="txtColDelClass" text="" />
+												</Column>
+											</columns>
+											<items>
+												<ColumnListItem vAlign="Middle">
+													<cells>														
+														<Text id="txtNameClass" text="{class}"/>
+														<Button icon="{ path: 'status',formatter: '.formatter.iconBtnSwichDecision'}"  
+																type="{ path: 'status',formatter: '.formatter.typeBtnSwichDecision'}" 
+																visible="true" press="deleteOrBackClass" id="btnDelClass" />
+													</cells>
+												</ColumnListItem>
+											</items>
+										</Table>
+									</form:SimpleForm>
+								</WizardStep>
+								<WizardStep id="exclusivityLetterStep" icon="sap-icon://attachment"
+									title="{i18n>exclusivityLetterStep}"
+									activate="onActivate">
+									<Text id="txtExclusivityLetter" text="Nesta etapa anexe a Carta de Exclusividade"/>
+									<form:SimpleForm id="formExclusivityLetter" 
+										editable="true" layout="ResponsiveGridLayout">	
+										<Table
+										id="table-uploadSet"
+										sticky="ColumnHeaders,HeaderToolbar"
+										width="auto"
+										fixedLayout="false"
+										inset="true"
+										autoPopinMode="true"
+										hiddenInPopin="None"
+										items="{path: '/documentCollection', templateShareable: false}"
+										selectionChange="onSelectionChange">
+										<headerToolbar>
+											<OverflowToolbar>
+												<Title text="{i18n>documents} ({= ${/documentCollection}.length})"
+													id="titleDocument" level="H2"/>
+												<ToolbarSpacer />
+												<ToolbarSeparator />
+												<u:FileUploader buttonOnly="true" id="fileUpload" change="onChange" fileType="pdf" mimeType="pdf" buttonText="Upload"  />												
+											</OverflowToolbar>
+										</headerToolbar>
+										<columns>
+											<Column id="fileName" importance="High">
+												<header>
+													<Label id="lblFilename" text="{i18n>fileName}" />
+												</header>
+											</Column>
+											
+											
+											<Column id="lastModified">
+												<header>
+													<Label id="lblLastModified" text="{i18n>lastModified}"/>
+												</header>
+											</Column>
+											<Column id="expiredDate">
+												<header>
+													<Label id="lblExpiredDate" text="{i18n>expiredDate}" />
+												</header>
+											</Column>
+											<Column id="actionButton" importance="High" />
+									</columns>
+									<items>
+										<ColumnListItem
+											id="lineDocumentTable" press="onItemPress"
+											highlight="{= ${uploadState} === 'Complete' ? 'Indication05' : null }">
+											<cells>
+												<HBox id="boxColumnImage">
+													<Image
+														id="imageDocument"
+														src="{imageUrl}"
+														class="sapMUSTItemImage sapMUSTItemIcon"
+														visible="{= ${imageUrl} !== undefined}"
+													/>
+													<core:Icon														
+														src="{parts: ['mediaType', 'fileName'], formatter: '.getIconSrc' }"
+														color="white" id="iconImage"
+														visible="{= ${imageUrl} === undefined || ${imageUrl} === '' }"
+														class="sapMUSTItemImage sapMUSTItemIcon"
+													/>
+													<VBox id="boxImage" class="sapUiTinyMargin sapUiSmallMarginBegin">
+														<Link
+															id="linkDocument"
+															text="{fileName}"
+															press="openPreview"
+															class="sapUiTinyMarginBottom"
+														/>
+														<Text id="txtTypeDocument" text="{documentType}" />
+													</VBox>
+												</HBox>																						
+												<VBox id="boxLastModified">
+													<Text class="sapUiTinyMarginTop" id="txtLastModified"
+														text="{path: 'lastmodified', 
+														type: 'sap.ui.model.type.Date', 
+														formatOptions: {pattern: 'dd/MM/y HH:mm'}}"
+													/>
+												</VBox>
+												<VBox id="boxExpiredDate">
+													<Text id="txtExpiredDate" text="{expiredDate}" 
+														visible="{= ${newDocument} === false}"/>
+													<DatePicker 
+														id="dpExpiredDate" required="true"
+														visible="{= ${newDocument} === true}" value="{
+														path: 'expiredDate',
+														type: 'sap.ui.model.type.Date',
+														formatOptions: {pattern: 'dd/MM/y'}}" />
+												</VBox>
+												<Button
+													id="delDocument"
+													class="sapUiTinyMarginBegin"
+													type="Transparent"
+													icon="sap-icon://decline"
+													press="onRemoveHandler" />
+											</cells>
+										</ColumnListItem>
+									</items>				
+								</Table>
+							</form:SimpleForm>
+						</WizardStep>
+					</Wizard>
+				</content>
+			</Page>	
+			<Page id="wizardReviewPage" showHeader="false">
+				<content>
+					<ObjectHeader
+						backgroundDesign="Solid"
+						id="headerBDReview"
+						titleLevel="H5"
+						binding="{/supplierS4/}"
+						title="{SupplierName}"
+						number="{SupplierId}"
+						numberUnit="{CurrencyCode}">						
+						<statuses>
+							<ObjectStatus id="headPostalCodeReview" text="{PostalCode}" />
+							<ObjectStatus id="headCountryReview" text="{State}/{Country}" />
+						</statuses>
+						<ObjectAttribute text="{Street}" id="headStreetReview" />
+						<ObjectAttribute text="{District}" id="headDeistrictReview"/>
+					</ObjectHeader>
+					<MessageStrip id="messageStripReviewPetro" class="sapUiSmallMarginBottom" text="{i18n>titleBrandyPetro}"
+						showIcon="true"/>
+					<Panel id="panelReview" width="auto" class="sapUiResponsiveMargin">
+						<headerToolbar>
+							<OverflowToolbar>
+								<Title id="titleReviewCnpj" text="{i18n>cnpjsStep}"/>
+								<ToolbarSpacer />
+								<Button id="editSupplier" icon="sap-icon://edit" press="editSupplier($event, 'CnpjStep')"
+									visible="{= ${/supplierHana/validatedPetro} === 'concluido' }"  />
+							</OverflowToolbar>
+						</headerToolbar>
+						<content>																			
+							<Table id="cnpjReview" inset="false" class="sapUiSmallMarginTop"
+								items="{
+									path: '/cnpjCollection',
+									sorter: {
+										path: 'Name'
+									}
+								}">
+								<columns>
+									<Column id="colCnpjReview" width="12em">
+										<Text id="txtColCnpjReview" text="{i18n>cnpj}" />
+									</Column>
+									<Column id="colCorporateNameReview">
+										<Text id="txtCorporateNameReview" text="{i18n>corporateName}" />
+									</Column>
+								</columns>
+								<items>
+									<ColumnListItem id="lineCnpTableReview" vAlign="Middle">
+										<cells>
+											<Text id="txtCnpjReview" text="{cnpj}" />
+											<Text id="razaoSocialCnpjReview" text="{razaoSocial}" />
+										</cells>
+									</ColumnListItem>
+								</items>
+							</Table>
 						</content>
-					</Page>				
-			</pages>
-		</NavContainer>
+					</Panel>
+					<Panel id="panelReviewManufacture" width="auto" class="sapUiResponsiveMargin">
+						<headerToolbar>
+							<OverflowToolbar>
+								<Title id="titleReviewManufacturer" text="{i18n>manufacturesStep}"/>
+								<ToolbarSpacer />
+								<Button id="editManufacturer" icon="sap-icon://edit" press="editSupplier($event, 'manufacturerStep')"
+									visible="{= ${/supplierHana/validatedPetro} === 'concluido' }"  />
+							</OverflowToolbar>
+						</headerToolbar>
+						<content>																			
+							<Table id="manufactureTableReview" inset="false" 
+								items="{
+									path: '/manufacturerCollection',
+									parameters : {
+										$count : true
+									},
+									sorter: {
+										path: 'Name'
+									}
+								}">								
+								<columns>
+									<Column id="colIdManufactureReview">
+										<Text text="{i18n>id}"  id="txtColIdManufactureReview" />
+									</Column>
+									<Column  id="colNameManufactureReview">
+										<Text text="{i18n>name}" id="txtColNameManufactureReview"/>
+									</Column>
+									<Column  id="colDelManufactureReview" demandPopin="true" hAlign="End">
+										<Text text="" id="txtColDelManufactureReview"/>
+									</Column>
+								</columns>
+								<items>
+									<ColumnListItem vAlign="Middle" id="lineManufactureReview">
+										<cells>
+											<Text text="{manufacturer}" id="txtIdManufactureReview"/>
+											<Text text="" id="txtNameManufactureReview"/>											
+										</cells>
+									</ColumnListItem>
+								</items>
+							</Table>
+						</content>
+					</Panel>
+					<Panel id="panelReviewClass" width="auto" class="sapUiResponsiveMargin">
+						<headerToolbar>
+							<OverflowToolbar>
+								<Title id="titleReviewClass" text="{i18n>classesStep}"/>
+								<ToolbarSpacer />
+								<Button id="editClass" icon="sap-icon://edit" press="editSupplier($event, 'classStep')"
+									visible="{= ${/supplierHana/validatedPetro} === 'concluido' }"  />
+							</OverflowToolbar>
+						</headerToolbar>
+						<content>																			
+							<Table id="classTableReview" inset="false" class="sapUiSmallMarginTop"
+								items="{
+									path: '/classCollection',
+									sorter: {
+										path: 'Name'
+									}
+								}">					
+								<columns>
+									<Column id="colNameClassReview">
+										<Text text="{i18n>name}" id="txtColNameClassReview"/>
+									</Column>					
+								</columns>
+								<items>
+									<ColumnListItem vAlign="Middle" id="lineTableClassReview">
+										<cells>
+											<Text id="txtColumnClass" text="{class}"/>								
+										</cells>
+									</ColumnListItem>
+								</items>
+							</Table>
+						</content>
+					</Panel>
+					<Panel id="panelReviewExclusivityLetter" width="auto" class="sapUiResponsiveMargin">
+						<headerToolbar>
+							<OverflowToolbar>
+								<Title id="titleReviewExclusivityLetter" text="{i18n>documents}"/>
+								<ToolbarSpacer />
+								<Button icon="sap-icon://edit" id="editExclusivityLetter" 
+									press="editSupplier($event, 'exclusivityLetterStep')"
+								 	visible="{= ${/supplierHana>/validatedPetro} === 'concluido' }" />
+							</OverflowToolbar>
+						</headerToolbar>
+						<content>							
+							<Table
+								id="table-uploadSetReview"
+								class="sapUiSmallMarginTop"
+								sticky="ColumnHeaders,HeaderToolbar"
+								width="auto"
+								fixedLayout="false"
+								inset="true"
+								autoPopinMode="true"
+								hiddenInPopin="None"
+								items="{path: '/documentCollection', templateShareable: false}">
+											
+								<columns>
+									<Column id="fileNameReview" importance="High">
+										<header>
+											<Label id="lblFileNameReview" text="{i18n>fileName}" />
+										</header>
+									</Column>																	
+									<Column id="lastModifiedReview">
+										<header>
+											<Label id="lblLastModifiedReview" text="{i18n>lastModified}" />
+										</header>
+									</Column>
+									<Column id="expiredDateReview">
+										<header>
+											<Label id="lblExpiredDateReview" text="{i18n>expiredDate}" />
+										</header>
+									</Column>									
+								</columns>
+								<items>
+									<ColumnListItem vAlign="Middle" id="lineTableExclusivityLetterReview">             
+										<cells>
+											<HBox id="hboxImageReview">
+												<Image
+													id="imageDocumentReview"
+													src="{imageUrl}"
+													class="sapMUSTItemImage sapMUSTItemIcon"
+													visible="{= ${imageUrl} !== undefined}"
+												/>
+												<core:Icon
+													id="iconDocumentReview"
+													src="{parts: ['mediaType', 'fileName'], formatter: '.getIconSrc' }"
+													color="white"
+													visible="{= ${imageUrl} === undefined || ${imageUrl} === '' }"
+													class="sapMUSTItemImage sapMUSTItemIcon"
+												/>
+												<VBox
+													id="vboxDocumentReview"
+													class="sapUiTinyMargin sapUiSmallMarginBegin"
+												>
+													<Link
+														id="linkDocumentReview"
+														text="{fileName}"
+														press="openPreview"
+														class="sapUiTinyMarginBottom"
+													/>
+													<Text id="typeDocumentReview" text="{documentType}" />
+												</VBox>
+											</HBox>                                              
+											<VBox id="vboxUpdateAtReview">
+												<Text
+													id="updateAtReviewDocument"
+													class="sapUiTinyMarginTop"
+													text="{path: 'updatedAt', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd/MM/y HH:mm'}}"
+												/>
+											</VBox>
+											<VBox id="vboxExpiredDateReview">
+												<Text 
+													id="ExpiredDateDocumentReview"
+													text="{
+													path: 'expiredDate',
+													type: 'sap.ui.model.type.Date',
+													formatOptions: {pattern: 'dd/MM/y'}}" />
+												
+											</VBox>
+										</cells>
+									</ColumnListItem>
+								</items>				
+							</Table>
+						</content>
+					</Panel>	
+				</content>
+			</Page>				
+		</pages>
+	</NavContainer>
 </mvc:View>
 

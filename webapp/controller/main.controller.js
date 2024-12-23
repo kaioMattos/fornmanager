@@ -21,19 +21,22 @@ sap.ui.define([
 	"use strict";
        
         return Controller.extend("gfex.petrobras.fornmanager.controller.main", {
+            formatter:formatter,
             onInit: function () {
-                
-                this.selectedShowCase = '';
+                this._deletedFiles = [];
+                this.loadDataS4 = false
+                this._wizard = this.byId("WizardSupGFEX");
+                this._oNavContainer = this.byId("wizardNavContainer");
+                this._oWizardContentPage = this.byId("wizardContentPage");
                 this.linearWizard = this.byId("wizardViewLinear");
                 this.branchingWizard = this.byId("wizardViewBranching");
                 this.model = new JSONModel({
-                    selectedBackgroundDesign: "Standard",
-                    linearWizardSelectedStep: "BasicDataStep",
-                    editMode:false,
+                    supplierHana:{},
                     cnpjCollection:[],
                     manufacturerCollection:[],
                     classCollection:[],
-                    documentCollection:[]
+                    documentCollection:[],
+                    loadData:false
                 });
                 this.getView().setModel(this.model);
                 this.loadApp();
@@ -85,32 +88,32 @@ sap.ui.define([
                     documentCollection
                 } = this.assembleModels(hanaModel);
                 const oModel = new JSONModel({
-                    supplierHana:hanaModel,
+                    supplierHana:!hanaModel.length?{}:hanaModel[0],
                     supplierS4:s4Model,
-                    cnpjCollection,
+                    cnpjCollection,                    
                     manufacturerCollection,
                     classCollection,
                     documentCollection,
-                    selectedBackgroundDesign: "Standard",
-                    selectedShowCase:this.selectedShowCase,
-                    linearWizardSelectedStep: "BasicDataStep",
-                    visibleLinear:false
+                    loadData:true
                 });
                 this.getView().setModel(oModel);
+            },
+            handleNav: function(page) {
+                var navCon = this.byId("wizardNavContainer");               
+                navCon.to(this.byId(page), 'show');               
             },
             openInitialModal:function(oSupplier){
                 switch(oSupplier){
                     case 'em andamento':
                         this.onOpenPopoverDialog('PetroValidation');
-                        this.selectedShowCase = 'review';
+                        this.handleNav('wizardReviewPage');
                         break
                     case 'concluido':
                         this.onOpenPopoverDialog('PetroValidated');
-                        this.selectedShowCase = 'review';
+                        this.handleNav('wizardReviewPage');
                         break
                     default: 
                         this.onOpenPopoverDialog('Welcome');
-                        this.selectedShowCase = 'linear';
                 }
                 this.getView().getModel().updateBindings();
             },
@@ -157,9 +160,6 @@ sap.ui.define([
                 oProductWizard.setBackgroundDesign(event.getParameter("selectedItem").getKey());
                 oBranchingWizard.setBackgroundDesign(event.getParameter("selectedItem").getKey());
             },
-            completedHandler: function () {
-                this._oNavContainer.to(this.byId("reviewContentPage"));
-            },
             getIconSrc: function(mediaType, thumbnailUrl) {
                 return UploadSetwithTable.getIconForFileType(mediaType, thumbnailUrl);
             },
@@ -184,7 +184,7 @@ sap.ui.define([
             },
             onRemoveHandler: function(oEvent) {
                 var oSource = oEvent.getSource();
-                const oContext = oSource.getBindingContext("documents");
+                const oContext = oSource.getBindingContext();
                 this.removeItem(oContext);
             },
             removeItem: function(oContext) {
@@ -213,7 +213,8 @@ sap.ui.define([
                                     oTable.removeSelections();
                                 }
                             }
-                        }
+                            this._deletedFiles.push(oContext.getObject().id)
+                        }.bind(this)
                     }
                 );
             },
@@ -237,12 +238,8 @@ sap.ui.define([
                     File.save(fContent, oDocument.fileName, oDocument.extension, type);
                 }						 
             },
-            _syncSelect: function (sStepId) {
-                var oModel = this.getView().getModel();
-                oModel.setProperty('/linearWizardSelectedStep', sStepId);
-            },
     
-            validateCnpjStep: function () {
+            validateCnpjStep: async function () {
                 let oCnpjStep = this.byId(`CnpjStep`);
                 let manufacturerStep = this.byId(`manufacturerStep`);
                 let oClassStep = this.byId(`classStep`);
@@ -253,10 +250,11 @@ sap.ui.define([
                 
                 oCnpjStep.setValidated(bIsValid);
                 if(bIsValid){
-                    this.assembleManufacturer();
+                    await this.assembleManufacturer();
+                    await this.assembleClass();
                 }
                 manufacturerStep.setBlocked(!bIsValid);
-                // oClassStep.setBlocked(!bIsValid);
+                oClassStep.setBlocked(!bIsValid);
                // oExclusiLetterStep.setBlocked(!bIsValid);
             },
             validateManufactureStep: function () {
@@ -270,10 +268,10 @@ sap.ui.define([
     
                 
                 if(bIsValid){
-                    this.assembleManufacturerClass();
+                    this.assembleClass();
                 }
                 manufacturerStep.setValidated(bIsValid);
-                //oClassStep.setBlocked(!bIsValid);
+                oClassStep.setBlocked(!bIsValid);
                 //oExclusiLetterStep.setBlocked(!bIsValid);
                 
             },
@@ -284,9 +282,9 @@ sap.ui.define([
                 oClassStep.setValidated(bIsValid);
                 oExclusiLetterStep.setBlocked(!bIsValid)
             },
-            deleteCnpj:function(collection, cnpj){
+           /* deleteCnpj:function(collection, cnpj){
                 return collection.filter((item)=>(item.cnpj !== cnpj));
-            },
+            },*/
             switchStatus:function(collection, status, property, sValue){
                 return collection.map((item)=>{
     
@@ -297,6 +295,7 @@ sap.ui.define([
                 });
             },
             deleteCnpj:function(oEvent){
+                this.loadDataS4 = true
                 const cnpj = oEvent.getSource().getParent().getCells()[0].getText();
                 const collection = this.getView().getModel().getProperty(`/cnpjCollection`);
                 let cnpjs = [];
@@ -304,10 +303,21 @@ sap.ui.define([
                 this.getView().getModel().setProperty("/cnpjCollection", cnpjs);
                 this.onFilter(`active`, `cnpjCollection`,`cnpjTable`);
                 this.validateCnpjStep();
+                this.setCountingTable(`titleItemsCnpj`, collection.filter((item)=>(item.status)).length,'Items');
             },
             
             onActivate: async function (oEvent) {
-                var sCurrentStepId = oEvent.getParameter("id");
+
+                const hanaObject = this.getView().getModel().getProperty('/supplierHana');
+                const loadData = this.getView().getModel().getProperty('/loadData');
+                const edit = !!Object.keys(hanaObject).length;
+                if(edit && !this.loadDataS4 && loadData){                    
+                    this.byId(`manufacturerStep`).setBlocked(false);
+                    this.byId(`classStep`).setBlocked(false);
+                    return
+                }
+
+                var sCurrentStepId = oEvent.getParameter("id");               
                 sCurrentStepId = sCurrentStepId.split('-').pop();
                 if (sCurrentStepId === 'CnpjStep') {
                     this.validateCnpjStep();
@@ -316,7 +326,8 @@ sap.ui.define([
                     this.validateManufactureStep();
                 } else if(sCurrentStepId === `classStep`){
                     await this.assembleClass();
-                }
+                } 
+              
             },
             validCnpj:function(oEvent){
                 const key = oEvent.getSource().getValue();
@@ -365,19 +376,7 @@ sap.ui.define([
                 const bind = this.byId(`${table}`).getBinding(`items`);
                 bind.filter(tabFilters)
             },
-            assembleManufacturerClass:function(){
-                //const panelManufac = this.byId(`StepClassManufac`);
-                const oModel = this.getView().getModel().getProperty(`/manufacturerCollection`);
-                const collectionClass= this.getView().getModel().getProperty(`/classCollection`);
-                const manufactures = oModel.filter((cnpj)=>cnpj.status);
-                //panelManufac.removeAllItems();
-                //manufactures.forEach(function(manufacturer) {
-                //    const oText = new sap.m.Text( {text:manufacturer.manufacturer});
-                //    panelManufac.addItem(oText);
-                //})
-                const sClass= this.getView().getModel(`i18n`).getProperty(`classStep`);
-                //this.setCountingTable(`titleClass`, collectionClass.filter((item)=>(item.status)).length,sClass);
-            },
+            
             fillInfoListInPanel: function(obj){
                 const panelCnpj = this.byId(obj.panel);						
                 panelCnpj.removeAllItems();
@@ -395,6 +394,7 @@ sap.ui.define([
                         manufacturer:item.ManufacturerNumber,
                         status:true
                     }))
+                    
                     return manufacturerCollection
                 }catch(err){
                     return []
@@ -443,17 +443,8 @@ sap.ui.define([
                 
                 const oDataClass = await this.getDataClass(aFilterCnpj,aFilterManufacturer);
                 this.getView().getModel().setProperty("/classCollection", oDataClass);
-                
-                const sClass = this.getView().getModel(`i18n`).getProperty(`classStep`);
-                const oParams = {
-                    panel:'StepClassManufac',
-                    collection:manufacturerCollection,
-                    attribute:'manufacturer',
-                    countLinesTable:oDataClass.length,
-                    titleCountTable:'titleClass',
-                    i18nManufacturer:sClass
-                }	
-                this.fillInfoListInPanel(oParams);
+
+                this.setCountingTable(`titleClass`, oDataClass.filter((item)=>(item.status)).length,'items');
                         
             },
             setCountingTable:function(bId, count, sTitle){
@@ -469,6 +460,7 @@ sap.ui.define([
                 this.onFilter(oEvent, `classCollection`,`classTable`);
             },
             deleteOrBackManufacture:function(oEvent){
+                
                 const typeAction = oEvent.getSource().getType();
                 let status = typeAction === `Reject`?false:true;
     
@@ -479,7 +471,7 @@ sap.ui.define([
                 this.getView().getModel().setProperty("/manufacturerCollection", aManufacturer);
                 this.onFilter(status?`excluded`:`active`, `manufacturerCollection`,`manufactureTable`);
                 const sManufacturer = this.getView().getModel(`i18n`).getProperty(`manufacturerStep`);
-                this.setCountingTable(`titleManufacturer`,collection.filter((item)=>(item.status)).length,sManufacturer);
+                this.setCountingTable(`titleManufacturer`,collection.filter((item)=>(item.status)).length,'items');
                 this.validateManufactureStep();
             },
             deleteOrBackClass:function(oEvent){
@@ -493,7 +485,7 @@ sap.ui.define([
                 this.getView().getModel().setProperty("/classCollection", aClass);
                 this.onFilter(status?`excluded`:`active`, `classCollection`,`classTable`);
                 const nameClass = this.getView().getModel(`i18n`).getProperty(`classStep`);
-                this.setCountingTable(`titleClass`,collection.filter((item)=>(item.status)).length,nameClass);
+                this.setCountingTable(`titleClass`,collection.filter((item)=>(item.status)).length,'items');
                 this.validateClassStep();
             },
             getFornecedor: async function(sValue) {
@@ -507,6 +499,7 @@ sap.ui.define([
     
                 try{
                     const fornecedor = await model.getFornecedores({filters: aFilters});
+                    this.loadDataS4 = true
                     return fornecedor
                     
                 }catch(oError){
@@ -518,6 +511,11 @@ sap.ui.define([
             checkDocuments:function(){
                 let sError = false
                 let aItemsDocuments = this.byId('table-uploadSet').getItems();
+                if(!aItemsDocuments.length){
+                    MessageBox.information(this.getView().getModel(`i18n`).getProperty("exclusivityLetterEmpty"));
+                    return true
+                }
+                    
                 aItemsDocuments.forEach(function(item) {
                     const input = item.getCells()[2].getItems()[1];
                     const visible = input.getVisible();
@@ -564,7 +562,7 @@ sap.ui.define([
             },
             assembleEntrySupHana:function(){
                 const documentId = this.getView().getModel().getProperty(`/supplierS4`).DocumentId
-                const cnpj= JSON.stringify(this.getView().getModel().getProperty(`/cnpjCollection`));
+                const cnpj= JSON.stringify(this.getView().getModel().getProperty(`/cnpjCollection`).filter((item)=>(item.status)));
                 const manufacturer= JSON.stringify(this.getView().getModel().getProperty(`/manufacturerCollection`));
                 const sClass = JSON.stringify(this.getView().getModel().getProperty(`/classCollection`));
                 const oEntryDocuments = this.assembleExclusiveCards(documentId);
@@ -584,14 +582,24 @@ sap.ui.define([
                 const validateRequireds = this.checkRequired();
                 if(!validateRequireds)
                     return
+                const hanaObject = this.getView().getModel().getProperty('/supplierHana');               
                 const {oEntrySupplier, oEntryDocuments} = this.assembleEntrySupHana();
-            
+                const edit = !!Object.keys(hanaObject).length;
+                
                 try {
-                    const createdForn = await model.createFornHana(oEntrySupplier);
-                    const aPromises = oEntryDocuments.map((oEntry)=>(model.createDocumentHana(oEntry)));
+                    let aPromises = [];
+                    if(edit){
+                        let supplierReq = await model.updateSupplier(oEntrySupplier.documentId, oEntrySupplier);                                        
+                        aPromises = this._deletedFiles.map((id)=>(model.deleteDocumentHana(`${id}`)));
+                    }else{
+                        let supplierReq = await model.createFornHana(oEntrySupplier);
+                        aPromises = oEntryDocuments.map((oEntry)=>(model.createDocumentHana(oEntry)));
+                    }
+                    
+                    
                     const resolvedPromises = await Promise.all(aPromises);
                     MessageBox.success(this.getView().getModel(`i18n`).getProperty("supplierSendedToPetro"));			
-                    this.getView().getModel().setProperty('/selectedShowCase','review');
+                   
                 }catch(err){
                     sap.ui.core.BusyIndicator.hide();
                     MessageBox.error(this.getView().getModel(`i18n`).getProperty("errorFornecedor"));
@@ -648,20 +656,18 @@ sap.ui.define([
                     MessageBox.error(this.getView().getModel(`i18n`).getProperty("errorLoadDocument"));
                 }
             },
-            editCnpj:function(){
-                this.getView().getModel().setProperty('/selectedShowCase','linear');
-                this.getView().getModel().setProperty('/editMode',true);
-                //this._syncSelect('CnpjStep')
-                this.sCurrentStepId='CnpjStep';
+            editSupplier:function(oEvent, step){   
+                var oCurrStep = this.getView().byId(step);             
+                this._wizard.setCurrentStep(oCurrStep);
+                
+                this.handleNav('wizardContentPage');      
             },
             _handleNavigationToStep: function (iStepNumber) {
-                var fnAfterNavigate = function () {
-                    this._wizard.goToStep(this._wizard.getSteps()[iStepNumber]);
-                    this._oNavContainer.detachAfterNavigate(fnAfterNavigate);
-                }.bind(this);
-    
-                this._oNavContainer.attachAfterNavigate(fnAfterNavigate);
-                this.backToWizardContent();
+                
+               
+            },
+            backToWizardContent: function () {
+                this._oNavContainer.backToPage(this._oWizardContentPage.getId());
             },
         
         });
