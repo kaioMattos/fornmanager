@@ -1,1 +1,41 @@
 Boa tarde, Iremos falar dos apps desenvolvidos para o projeto GFEX  App wizard Guide. O intuito deste aplicativo é que o fornecedor nos indique quais fabricantes e classes ele é responsável, para assim identificarmos os materiais ZIBE que lhe serão associados e por fim anexar a carta de exclusividade, informação que irá validar se o mesmo é ou não exclusivo. Após o cadastro, os dados são enviados ao time Petro para confirmar sua exclusividade.  INICIAMOS A SIMULAÇÃO   O fornecedor só poderá atualizar alguma informação de cadastro após a liberação da Petro.  APRESENTAMOS A FUNÇÃO DE VISUALIZAR(ENQUANDO O DADO AINDA ESTA SENDO VALIDADO PELA PETRO) APRESENTAMOS A FUNÇÃO DE EDITAR(QUANDO O DADO FOR VALIDADO PELA PETRO)   Lista de Materiais ZIBE  Este aplicativo só estará liberado depois que o fornecedor estiver com o cadastro validado pela Petrobrás. No app temos uma listagem de materiais ZIBE onde ele poderá reconhecer ou não.  APRESENTAR TELA INICIAL DE MATERIAIS APRESENTAR FUNCIONALIDADE DE RECONHECER OU NÃO  quando reconhecido o mesmo poderá preencher algumas informações comerciais, caso não ele não reconheça terá a possibilidade de indicar o motivo.  APRESENTAR FUNCIONALIDADE DE PREENCHER DADOS DOS MATERIAIS RECONHECIDOS/NÃO RECONHECIDOS  Funcionalidades de filtro, opções para adicionar/remover colunas e gerar excel estão presentes neste aplicativo.  APRESENTAR FUNCIONALIDADES QUE FACILITAM A EXPERIENCIA DO USUÁRIO
+
+SYSTEM DEMO 03/02/25 GFEX - Roteiro
+
+ 
+Ola, meu nome é Kaio e trabalho como Desenvolvedor/Arquiteto BTP no TIME GFEX. Está é a nossa 2a participação no System Demo e irei apresentar os primeiros desenvolvimentos da solução para Gestão de Materiais de Fornecedores Exclusivos.
+ 
+Primeiramente, queremos salientar que trabalhamos no ambiente S42-220 do SAP, para este teste e atribuímos 776 materiais à tabela SATRE provindas do ambiente de produção para tentar simular a ordem de grandeza que cada fornecedor tem de materiais
+ 
+1a Parte
+ 
+Dando início a primeira feature construída: estamos no Wizard Guide para cadastro do fornecedor no GFEX, para onde ele será direcionado depois que fizer seu login no "Na palma da mão". O objetivo da feature é identificar quais materiais da base de dados PETROBRAS devem ser atribuídos ao fornecedor( EXIBE 1A TELA DO WIZARD GUIDE)
+ 
+Faremos a simulação com o fornecedor EMERSON...
+-- Faz cadastro simulando da Emerson exibindo as seleções possíveis até anexação da carta-- (PASSA PELAS TELAS E ENCERRAR ENVIANDO À PETROBRAS PARA VALIDAR)
+ 
+Ao fim, as informações são enviados a um perfil PETROBRAS para avaliar  se tudo está de acordo quanto aos dados que o fornecedor selecionou (EXIBE TELA DE ENVIAR PARA VALIDAÇÃO)
+ 
+Enquanto o cadastro não for validado, o fornecedor é impedido de seguir para as próximas etapas (APENAS COMENTA AO FIM DE CLICAR ENVIAR NA TELA DE ENVIAR PARA VALIDAÇÃO)
+
+Iremos, agora, simular que a validação foi feita por um perfil PETROBRAS das informações enviadas que se encontram salvas no POSTMAN. Vale ressaltar que todas as informações da aplicação GFEX estão neste sistema, com exceção da carta de exclusividade, que deverá ter um local ainda a definir (EXIBIR POSTMAN E SIMULAR O "OK") 
+ 
+2a Parte
+ 
+Com o OK do perfil PETROBRAS, o fornecedor terá acesso à lista de materiais exclusivos que ficarão associadas ao seu login. (EXIBIR LISTA DE MATERIAIS)
+ 
+Nesta tela, a primeira coisa a se fazer a se fazer é selecionar um conjunto de materiais a serem reconhecidos por este botão. Aqui o fornecedor irá identificar os materiais que ele concorda em serem comercializados e quais ele afirma não fornecer. (EXECUTAR RECONHECIMENTO DE MATERIAIS MATERIAIS E NÃO RECONHECIMENTO DE ALGUNS)
+
+3a Parte
+ 
+Com os materiais reconhecidos, novas funções são habilitadas. Dentre as features já desenvolvidas, está a de incluir informações sobre a proposta comercial. Neste exemplo, ao selecionar um conjunto de itens, o fornecedor é capaz de inserir o valor unitário, o prazo de validade da proposta, e o tempo de fornecimento de cada item para compor a ata de preços dos materiais (EXIBIR QUE DEPOIS DE RECONHECIDO PODE INSERIR PREÇOS E CONDIÇÕES)
+ 
+Para facilitar, é possível navegar pelos itens selecionados através de uma tabela ou pela páginação no rodapé da tela
+(EXIBIR TABELA E PAGINAÇÃO. A PARTE DA DATA APENAS COMENTAR SE NÃO TIVER EXIBIÇÃO)
+ 
+Já para os materiais não reconhecidos, é habilitada apenas a função de informar o motivo de não reconhecimento, como obsolescência, substituição, entre outros. (EXIBIR QUE PARA MATERIAIS NÃO RECONHECIDOS, É POSSÍVEL INSERIR MOTIVO/OBSERVAÇÃO)
+ 
+Por fim, o visual possui várias utilidades auxiliares, como alterações de layout, filtragem e exportação para excel, com o intuito de se adaptar à necessidade de cada usuário (EXIBIR FUNÇÃO DE INCLUIR E TIRAR COLUNAS, FUNÇÃO DE FILTRAR, 
+FUNÇÃO EXPORTAR EM EXCEL)
+ 
+O Time GFEX agradece sua atenção e tenham todos um ótimo dia.
