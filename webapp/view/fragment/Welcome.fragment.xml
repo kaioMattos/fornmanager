@@ -17,7 +17,11 @@
 					columnsL="1"
 					columnsXL="1">
 					<f:content>
-						<Text text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vehicula, nulla eget sagittis vulputate, sem dolor iaculis nisi, sit amet semper lectus nibh et leo. Nam luctus ac justo aliquet dignissim. Suspendisse ex magna, volutpat vitae neque ac, iaculis blandit mauris. Vestibulum at vestibulum nisl. Suspendisse eget finibus quam, nec maximus velit. Curabitur lacinia felis odio, quis bibendum nibh dignissim non. Nam consectetur ultricies massa, vel eleifend ligula iaculis in. Sed ac pretium mi, vel condimentum odio. Nulla facilisi. Etiam aliquet cursus tincidunt. Vivamus ex lorem, pharetra eget urna at, blandit mollis quam. Integer id libero et leo interdum egestas. Morbi bibendum turpis et velit malesuada, quis tincidunt lacus posuere. Donec et dui dignissim, tincidunt arcu pretium, tristique metus. Cras pharetra ante id ex gravida, in ultricies libero pretium. Donec mollis orci varius, blandit justo et, fringilla elit. Fusce lacinia porta diam, at ultrices magna gravida et. Sed accumsan tellus id turpis accumsan, sit amet finibus est sodales. Pellentesque tincidunt eu libero in tristique. Sed finibus vulputate enim, eget pulvinar lectus commodo quis. Curabitur porta erat massa, vitae semper nisi condimentum condimentum. Ut sollicitudin sollicitudin arcu, vel placerat tellus mattis a. Pellentesque maximus faucibus nibh, eu eleifend ante efficitur a." />
+						<Text text="Bem vindo à versão inicial da tela de cadastro no GFEx.
+							A proposta desta tela é o fornecedor identificar os grupos de materiais que ele detém direito de exclusividade.
+							As informações são obtidas do banco de dados PETROBRAS. O fornecedor pode remover de seu escopo mas não adicionar.
+							Opere a solução e sugira melhorias e correções, desde textos até bugs.
+							A PETROBRAS e o time GFEx agradecem o vosso apoio." />
 					</f:content>
 				</f:SimpleForm>
 			</VBox>

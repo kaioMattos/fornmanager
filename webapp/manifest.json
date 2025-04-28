@@ -5,7 +5,7 @@
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
-      "version": "0.0.1"
+      "version": "0.0.7"
     },
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
@@ -14,6 +14,20 @@
       "id": "@sap/generator-fiori:basic",
       "version": "1.11.1",
       "toolsId": "b0dbb2e8-4497-4206-aa55-a6764550e20b"
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "fornmanager-display": {
+          "semanticObject": "fornmanager",
+          "action": "display",
+          "title": "{{flpTitle}}",
+          "icon": "sap-icon://supplier",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
     },
     "dataSources": {
      
@@ -59,6 +73,9 @@
       "cozy": true
     },
     "models": {
+      "":{
+        "dataSource": ""
+      },
       "documents": {
 				"type": "sap.ui.model.json.JSONModel",
 				"dataSource": "documentDataSource"
@@ -130,5 +147,9 @@
 				]
 			}
 		}
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "gfexpetrobrasfornmanager"
   }
 }

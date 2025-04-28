@@ -96,7 +96,7 @@
 		<WizardStep id="manufacturerStep_" icon="sap-icon://action-settings"
 					title="{i18n>manufacturerStep}"
 					activate="">
-			<Text text="Para os CNPJs, foram encontrados os seguintes fabricantes:"/>
+			<Text text="Para os CNPJs comerciais, foram encontrados os seguintes fabricantes:"/>
 			<Panel>
 				<FlexBox id="cnpjsStepManufacturer" direction="Column" alignItems="Start" class="sapUiSmallMarginBottom sapUiTinyMarginTop"/>
 			</Panel>
@@ -148,7 +148,7 @@
 		<WizardStep id="classStep_" icon="sap-icon://switch-classes"
 					title="{i18n>classStep}"
 					activate="">
-			<Text text="Para os Fabricantes"/>
+			<Text text="Para os Fabricantes comercializados"/>
 			<Panel>
 				<FlexBox id="StepClassManufac_" direction="Column" alignItems="Start" class="sapUiSmallMarginBottom sapUiTinyMarginTop"/>
 			</Panel>
@@ -197,7 +197,7 @@
 		<WizardStep id="exclusivityLetterStep_" icon="sap-icon://attachment"
 					title="{i18n>exclusivityLetterStep}"
 					activate="">
-					<Text text="Nesta etapa anexe a Carta de Exclusividade"/>
+					<Text text="Anexe a Carta de Exclusividade, apenas(.pdf)"/>
 				<form:SimpleForm editable="true" layout="ResponsiveGridLayout">	
 				<Table
 				id="table-uploadSet_"

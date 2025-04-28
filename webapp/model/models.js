@@ -35,28 +35,35 @@ sap.ui.define([
 		},
 
 		getFornecedorHana: function(options) {
-			return connector.readDataSource("/Suppliers", options,'_oDataModelHana').then(function(result) {
+			return connector.readDataSource("/SuppliersGFEX", options,'_oDataModelHana').then(function(result) {
 				var oData = result.oData.results;
 				return oData;
 			});
 		},
 		updateSupplier:function(id, data){
-			return connector.update(`/Suppliers(${id})`, data).then(function(oData, oResponse) {
+			return connector.update(`/SuppliersGFEX(documentId='${id}')`, data).then(function(oData, oResponse) {
 				return oData;
 			});
 		},
 		createFornHana: function(data) {
-			return connector.create("/Suppliers", data).then(function(oData, oResponse) {
+			return connector.create("/SuppliersGFEX", data).then(function(oData, oResponse) {
 				return oData;
 			});
 		},
 		createDocumentHana: function(data) {
-			return connector.create("/ExclusiveCard", data).then(function(oData, oResponse) {
+			return connector.create("/ExclusiveCardGFEX", data).then(function(oData, oResponse) {
 				return oData;
 			});
 		},
 		deleteDocumentHana: function(sNumOrder) {
-			return connector.remove(`/ExclusiveCard(${sNumOrder})`);
+			return connector.remove(`/ExclusiveCardGFEX(id=guid'${sNumOrder}')`);
+		},
+		
+		getDocumentHana: function(options) {
+			return connector.readDataSource("/ExclusiveCardGFEX", options,'_oDataModelHana').then(function(result) {
+				var oData = result.oData.results;
+				return oData;
+			});
 		},
 		getManufacture:function(options){
 			return connector.readDataSource("/ManufacturerMaterial", options, '_oDataModel').then(function(result) {

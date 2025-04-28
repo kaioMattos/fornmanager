@@ -277,7 +277,12 @@ sap.ui.define([
 		getDataManufacturer: async function(aFilter){
 		
 			try{
-				const oData = await model.getManufacture({filters:aFilter});
+				const oData = await model.getManufacture({
+					filters:aFilter,
+					urlParameters: {
+						"$expand": "toManu"
+				  }
+				});
 				const manufacturerCollection = oData.map((item)=>({
 					manufacturer:item.ManufacturerNumber,
 					status:true
@@ -484,8 +489,15 @@ sap.ui.define([
 				const createdForn = await model.createFornHana(oEntrySupplier);
 				const aPromises = oEntryDocuments.map((oEntry)=>(model.createDocumentHana(oEntry)));
 				const resolvedPromises = await Promise.all(aPromises);
-				MessageBox.success(this.getView().getModel(`i18n`).getProperty("supplierSendedToPetro"));			
+				MessageBox.success(this.getView().getModel(`i18n`).getProperty("supplierSendedToPetro"),
+				{
+					
+					onClose: function(sAction) {
+						window.location.reload();
+					}
+				});			
 				this.getView().getModel().setProperty('/selectedShowCase','review');
+				
 			}catch(err){
 				sap.ui.core.BusyIndicator.hide();
 				MessageBox.error(this.getView().getModel(`i18n`).getProperty("errorFornecedor"));

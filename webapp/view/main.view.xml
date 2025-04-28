@@ -66,7 +66,7 @@
 											<headerToolbar>
 												<OverflowToolbar>
 													<content>
-														<Title text="Items" level="H2" id="titleItemsCnpj"/>														
+														<Title text="Itens" level="H2" id="titleItemsCnpj"/>														
 													</content>
 												</OverflowToolbar>
 											</headerToolbar>
@@ -99,7 +99,7 @@
 								<WizardStep id="manufacturerStep" icon="sap-icon://action-settings"
 									title="{i18n>manufacturerStep}"
 									activate="onActivate">
-									<Text text="Para os CNPJs, foram encontrados os seguintes fabricantes:" 
+									<Text text="Para os CNPJs comerciais, foram encontrados os seguintes fabricantes:" 
 										id="textManufacturer"/>
 									<form:SimpleForm editable="true" layout="ResponsiveGridLayout" 
 									id="formManufacture">	
@@ -115,21 +115,20 @@
 											}">
 											<headerToolbar>
 												<OverflowToolbar>
-													<Title text="Items" id="titleManufacturer" level="H2"/>
+													<Title text="Itens" id="titleManufacturer" level="H2"/>
 													<ToolbarSpacer />
 													<SegmentedButton selectedKey="active" id="swichStatusManufacture" selectionChange=".onFilterManufacture" class="sapMSegmentedButtonNoAutoWidth">
 														<items>
 															<SegmentedButtonItem id="swichActive" text="{i18n>lblAtivos}" key="active"/>	
 															<SegmentedButtonItem id="swichExcluded" text="{i18n>lblExcluded}" key="excluded"/>
 														</items>
-													</SegmentedButton>
-													<!-- <Button id="clearCompleted" enabled="{/itemsRemovable}" icon="sap-icon://delete" press=".clearCompleted"/> -->
+													</SegmentedButton>																									
 												</OverflowToolbar>
 											</headerToolbar>
 											<columns>
-												<Column id="colIdManufacture">
+											<!--	<Column id="colIdManufacture">
 													<Text text="{i18n>id}"  id="txtColIdManufacture" />
-												</Column>
+												</Column>-->
 												<Column  id="colNameManufacture">
 													<Text text="{i18n>name}" id="txtColNameManufacture"/>
 												</Column>
@@ -140,8 +139,8 @@
 											<items>
 												<ColumnListItem vAlign="Middle" id="lineManufacture">
 													<cells>
-														<Text text="{manufacturer}" id="txtIdManufacture"/>
-														<Text text="" id="txtNameManufacture"/>
+														<!--<Text text="" id="txtIdManufacture"/>-->
+														<Text text="{manufacturer}" id="txtNameManufacture"/>
 														<Button icon="{ path: 'status',formatter: '.formatter.iconBtnSwichDecision'}"  															
 															type="{ path: 'status',
 															formatter: '.formatter.typeBtnSwichDecision'}" 
@@ -154,7 +153,7 @@
 								</WizardStep>
 								<WizardStep id="classStep" icon="sap-icon://switch-classes"
 									title="{i18n>classStep}" activate="onActivate">
-									<Text id="txtClass" text="Para os Fabricantes, foram encontrados as seguintes classes:"/>									
+									<Text id="txtClass" text="Para os Fabricantes comercializados, foram encontrados as seguintes classes:"/>									
 									<form:SimpleForm id="formClass" editable="true" layout="ResponsiveGridLayout">	
 										<Table id="classTable" inset="false" 
 											items="{
@@ -165,7 +164,7 @@
 											}">
 											<headerToolbar>
 												<OverflowToolbar>
-													<Title text="Items" id="titleClass" level="H2"/>
+													<Title text="Itens" id="titleClass" level="H2"/>
 													<ToolbarSpacer />
 													<SegmentedButton selectedKey="active" id="swichStatusClass" selectionChange=".onFilterClass" class="sapMSegmentedButtonNoAutoWidth">
 														<items>
@@ -176,6 +175,9 @@
 												</OverflowToolbar>
 											</headerToolbar>
 											<columns>
+											<Column id="colIdClass">
+												<Text text="{i18n>id}" id="txtColIdClass"/>
+											</Column>	
 												<Column id="colNameClass">
 													<Text id="txtColNameClass" text="{i18n>name}" />
 												</Column>
@@ -184,8 +186,9 @@
 												</Column>
 											</columns>
 											<items>
-												<ColumnListItem vAlign="Middle">
-													<cells>														
+												<ColumnListItem id="lineItemCnpj" vAlign="Middle">
+													<cells>				
+														<Text id="txtColumnIdClassWizard" text="{numberClass}"/>											
 														<Text id="txtNameClass" text="{class}"/>
 														<Button icon="{ path: 'status',formatter: '.formatter.iconBtnSwichDecision'}"  
 																type="{ path: 'status',formatter: '.formatter.typeBtnSwichDecision'}" 
@@ -199,7 +202,14 @@
 								<WizardStep id="exclusivityLetterStep" icon="sap-icon://attachment"
 									title="{i18n>exclusivityLetterStep}"
 									activate="onActivate">
-									<Text id="txtExclusivityLetter" text="Nesta etapa anexe a Carta de Exclusividade"/>
+									<Text id="txtExclusivityLetter" text="Anexe a Carta de Exclusividade (apenas"/>
+										<core:Icon
+											src="sap-icon://pdf-attachment"
+											class="size1 sapUiTinyMarginBegin"
+											color="red" >
+											
+										</core:Icon>
+										<Text id="txtExclusivityLettera" text=")"/>
 									<form:SimpleForm id="formExclusivityLetter" 
 										editable="true" layout="ResponsiveGridLayout">	
 										<Table
@@ -325,8 +335,7 @@
 							<OverflowToolbar>
 								<Title id="titleReviewCnpj" text="{i18n>cnpjsStep}"/>
 								<ToolbarSpacer />
-								<Button id="editSupplier" icon="sap-icon://edit" press="editSupplier($event, 'CnpjStep')"
-									visible="{= ${/supplierHana/validatedPetro} === 'concluido' }"  />
+								
 							</OverflowToolbar>
 						</headerToolbar>
 						<content>																			
@@ -361,8 +370,7 @@
 							<OverflowToolbar>
 								<Title id="titleReviewManufacturer" text="{i18n>manufacturesStep}"/>
 								<ToolbarSpacer />
-								<Button id="editManufacturer" icon="sap-icon://edit" press="editSupplier($event, 'manufacturerStep')"
-									visible="{= ${/supplierHana/validatedPetro} === 'concluido' }"  />
+								
 							</OverflowToolbar>
 						</headerToolbar>
 						<content>																			
@@ -374,12 +382,15 @@
 									},
 									sorter: {
 										path: 'Name'
-									}
+									},
+									 filters : [
+										{ path : 'status', operator : 'EQ', value1 : true}
+									]
 								}">								
 								<columns>
-									<Column id="colIdManufactureReview">
+									<!--<Column id="colIdManufactureReview">
 										<Text text="{i18n>id}"  id="txtColIdManufactureReview" />
-									</Column>
+									</Column>-->
 									<Column  id="colNameManufactureReview">
 										<Text text="{i18n>name}" id="txtColNameManufactureReview"/>
 									</Column>
@@ -403,8 +414,7 @@
 							<OverflowToolbar>
 								<Title id="titleReviewClass" text="{i18n>classesStep}"/>
 								<ToolbarSpacer />
-								<Button id="editClass" icon="sap-icon://edit" press="editSupplier($event, 'classStep')"
-									visible="{= ${/supplierHana/validatedPetro} === 'concluido' }"  />
+								
 							</OverflowToolbar>
 						</headerToolbar>
 						<content>																			
@@ -413,9 +423,15 @@
 									path: '/classCollection',
 									sorter: {
 										path: 'Name'
-									}
+									},
+									 filters : [
+										{ path : 'status', operator : 'EQ', value1 : true}
+									]
 								}">					
 								<columns>
+								<Column id="colIdClassReview">
+										<Text text="{i18n>id}" id="txtColIdClassReview"/>
+									</Column>	
 									<Column id="colNameClassReview">
 										<Text text="{i18n>name}" id="txtColNameClassReview"/>
 									</Column>					
@@ -423,6 +439,7 @@
 								<items>
 									<ColumnListItem vAlign="Middle" id="lineTableClassReview">
 										<cells>
+											<Text id="txtColumnIdClass" text="{numberClass}"/>		
 											<Text id="txtColumnClass" text="{class}"/>								
 										</cells>
 									</ColumnListItem>
@@ -435,9 +452,7 @@
 							<OverflowToolbar>
 								<Title id="titleReviewExclusivityLetter" text="{i18n>documents}"/>
 								<ToolbarSpacer />
-								<Button icon="sap-icon://edit" id="editExclusivityLetter" 
-									press="editSupplier($event, 'exclusivityLetterStep')"
-								 	visible="{= ${/supplierHana>/validatedPetro} === 'concluido' }" />
+								
 							</OverflowToolbar>
 						</headerToolbar>
 						<content>							
@@ -522,6 +537,15 @@
 						</content>
 					</Panel>	
 				</content>
+					<footer>
+			<OverflowToolbar>
+				<ToolbarSpacer/>
+				
+				<Button id="editManufacturer" press="editSupplier($event, 'manufacturerStep')"
+					visible="{= ${/supplierHana/validatedPetro} === 'concluido' }" 
+					text="Editar" />
+			</OverflowToolbar>
+		</footer>
 			</Page>				
 		</pages>
 	</NavContainer>

@@ -12,12 +12,14 @@ sap.ui.define([
 
         init: function (oComponent) {
             this._oComponent = oComponent;
-            this._oDataModel = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/YESB_GFEX", {
+            var id = this.getOwnerComponent()._componentConfig.url;
+            this._oDataModel = new sap.ui.model.odata.v2.ODataModel(`sap/opu/odata/sap/YESB_GFEX`, {
                 defaultUpdateMethod: sap.ui.model.odata.UpdateMethod.Put
             });
             
-            this._oDataModelHana = new sap.ui.model.odata.v2.ODataModel("/odata/v2/catalog");
-            
+            this._oDataModelHana = new sap.ui.model.odata.v2.ODataModel(`sap/opu/odata/sap/YAPI_GFEX_SUPPLIER_O2`);
+            // this._oDataModelHana1 = new sap.ui.model.odata.v2.ODataModel(`/sap/opu/odata/sap/YAPI_GFEX_SUPPLIER_O2`);
+            // this._oDataModelHana2 = new sap.ui.model.odata.v2.ODataModel(`sap/opu/odata/sap/YAPI_GFEX_SUPPLIER_O2`);
 
             var aModels = [this._oDataModel, this._oDataModelHana];
             var aPromises = aModels.map(oModel => {
